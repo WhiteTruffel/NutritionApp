@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "3D6D07FF-3592-4C04-9AE1-EE993CED0998",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:NutritionApp.xcodeproj",
+      "identifier" : "E66813ED2FCAF70D00DFAEA9",
+      "name" : "NutritionApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:NutritionApp.xcodeproj",
+        "identifier" : "E66814CE2FCB5F3000DFAEA9",
+        "name" : "NutritionAppTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,0 +1,216 @@
+import SwiftUI
+import SwiftData
+
+/// „Heute" im Whoop-Prinzip (BL6): Kopfzeile mit Status, drei Ringe (Ernährung, Belastung,
+/// Erholung) mit Drill-down, plus MyFitnessPal-artige Schnellerfassung und Mini-Statistiken,
+/// damit der Einstieg lebendig statt leer wirkt.
+struct OverviewView: View {
+    @Environment(\.modelContext) private var context
+    @Query(sort: \FoodEntry.date, order: .reverse) private var entries: [FoodEntry]
+    @Query private var profiles: [UserProfile]
+    @Query private var weights: [WeightEntry]
+    @Query private var intakes: [IntakeEntry]
+    private let health = NutritionHealthStore()
+
+    @State private var activity: ActivityRings?
+    @State private var readiness: ReadinessResult?
+    @State private var steps: Double = 0
+    @State private var showGoals = false
+    @State private var showAddFood = false
+    @AppStorage("fastingStartEpoch") private var fastingStartEpoch: Double = 0
+
+    private var profile: UserProfile? { profiles.first }
+    private var todayEntries: [FoodEntry] { entries.filter { Calendar.current.isDateInToday($0.date) } }
+    private var totals: MacroTotals { todayEntries.totals() }
+
+    // Ernährung (adaptiv wie das Detail).
+    private var adaptive: AdaptiveEnergyResult? {
+        guard profile?.useAdaptiveTDEE == true else { return nil }
+        let daily = Dictionary(grouping: entries) { Calendar.current.startOfDay(for: $0.date) }
+            .map { (day: $0.key, kcal: $0.value.reduce(0.0) { $0 + ($1.kcal ?? 0) }) }
+        let pts = weights.map { (date: $0.date, kg: $0.weightKg) }
+        return AdaptiveEnergy.estimate(weights: pts, dailyKcal: daily)
+    }
+    private var goalKcal: Double {
+        if let a = adaptive, let p = profile { return p.adaptiveKcalTarget(tdee: a.tdee) }
+        return profile?.kcalTarget ?? NutritionTargets.default.kcal
+    }
+    private var remainingKcal: Int { Int((goalKcal - totals.kcal).rounded()) }
+    private var nutritionProgress: Double { goalKcal > 0 ? totals.kcal / goalKcal : 0 }
+
+    private var moveKcal: Double { activity?.moveKcal ?? 0 }
+    private var loadProgress: Double { let g = activity?.moveGoal ?? 0; return g > 0 ? moveKcal / g : 0 }
+    private var recoveryScore: Int? { readiness?.score }
+    private var recoveryProgress: Double { Double(recoveryScore ?? 0) / 100 }
+
+    private var todayWater: Double {
+        intakes.filter { $0.kind == .water && Calendar.current.isDateInToday($0.date) }.reduce(0) { $0 + $1.amount }
+    }
+    private var waterGoal: Double { (((profile?.weightKg ?? 75) * 35) / 50).rounded() * 50 }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 14) {
+                    header
+
+                    NavigationLink { DashboardView() } label: {
+                        RingCard(title: "Ernährung", value: "\(remainingKcal)", unit: "kcal übrig",
+                                 progress: nutritionProgress, color: Theme.accent, symbol: "fork.knife")
+                    }.buttonStyle(.plain)
+
+                    NavigationLink { LoadDetailView().navigationTitle("Belastung").navigationBarTitleDisplayMode(.inline) } label: {
+                        RingCard(title: "Belastung", value: "\(Int(moveKcal.rounded()))", unit: "kcal heute",
+                                 progress: loadProgress, color: .orange, symbol: "flame.fill")
+                    }.buttonStyle(.plain)
+
+                    NavigationLink { RecoveryDetailView().navigationTitle("Erholung").navigationBarTitleDisplayMode(.inline) } label: {
+                        RingCard(title: "Erholung", value: recoveryScore.map { "\($0)" } ?? "–", unit: "von 100",
+                                 progress: recoveryProgress, color: .blue, symbol: "bed.double.fill")
+                    }.buttonStyle(.plain)
+
+                    quickActions
+                    statsStrip
+                }
+                .padding(16)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Heute")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showGoals = true } label: { Image(systemName: "gearshape.fill") }
+                }
+            }
+            .sheet(isPresented: $showGoals) { if let profile { GoalsView(profile: profile) } }
+            .sheet(isPresented: $showAddFood) {
+                AddFoodView(presetMeal: .snack) { addEntry($0) }
+            }
+            .task {
+                activity = await health.todayActivity()
+                readiness = await health.readiness()
+                steps = await health.todaySteps()
+            }
+        }
+    }
+
+    // MARK: Kopf
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(Date().formatted(.dateTime.weekday(.wide).day().month(.wide)))
+                .font(.subheadline).foregroundStyle(.secondary)
+            Text(statusLine).font(.title3.weight(.semibold))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    private var statusLine: String {
+        if let s = recoveryScore { return "\(recoveryWord(s)) · \(remainingKcal) kcal übrig" }
+        return "\(remainingKcal) kcal übrig heute"
+    }
+    private func recoveryWord(_ s: Int) -> String {
+        switch s { case 66...: return "Gut erholt"; case 40..<66: return "Mäßig erholt"; default: return "Wenig erholt" }
+    }
+
+    // MARK: Schnellerfassung
+
+    private var quickActions: some View {
+        HStack(spacing: 10) {
+            actionButton("plus.circle.fill", "Essen") { showAddFood = true }
+            actionButton("drop.fill", "Wasser") { addIntake(.water, 250) }
+            actionButton("cup.and.saucer.fill", "Kaffee") { addIntake(.caffeine, 95); addIntake(.water, 200) }
+        }
+    }
+    private func actionButton(_ icon: String, _ label: String, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 5) {
+                Image(systemName: icon).font(.title3).foregroundStyle(Theme.accent)
+                Text(label).font(.caption).foregroundStyle(.primary)
+            }
+            .frame(maxWidth: .infinity).padding(.vertical, 12)
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: Mini-Statistiken
+
+    private var statsStrip: some View {
+        HStack(spacing: 10) {
+            miniTile("figure.walk", steps > 0 ? steps.formatted(.number.precision(.fractionLength(0))) : "–", "Schritte", .green)
+            miniTile("drop.fill", "\(Int(todayWater)) ml", "Wasser", .blue)
+            miniTile("timer", fastingStatus, "Fasten", .purple)
+        }
+    }
+    private func miniTile(_ icon: String, _ value: String, _ label: String, _ color: Color) -> some View {
+        VStack(spacing: 3) {
+            Image(systemName: icon).foregroundStyle(color)
+            Text(value).font(.subheadline.weight(.semibold)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.7)
+            Text(label).font(.caption2).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 12)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+    }
+    private var fastingStatus: String {
+        guard fastingStartEpoch > 0 else { return "—" }
+        let h = (Date().timeIntervalSince1970 - fastingStartEpoch) / 3600
+        return "\(Int(h)) h"
+    }
+
+    // MARK: Aktionen
+
+    private func addEntry(_ entry: FoodEntry) {
+        context.insert(entry); try? context.save()
+        let payload = entry.makePayload()
+        Task { @MainActor in
+            do { try await health.save(payload); entry.syncedToHealthKit = true; try? context.save() } catch {}
+        }
+    }
+    private func addIntake(_ kind: IntakeKind, _ amount: Double) {
+        context.insert(IntakeEntry(kind: kind, amount: amount)); try? context.save()
+        Task {
+            switch kind {
+            case .water:    await health.saveWater(ml: amount)
+            case .caffeine: await health.saveCaffeine(mg: amount)
+            }
+        }
+    }
+}
+
+/// Eine Ring-Karte der Übersicht: großer Fortschrittsring + Wert, als Drill-down-Einstieg.
+private struct RingCard: View {
+    let title: String
+    let value: String
+    let unit: String
+    let progress: Double
+    let color: Color
+    let symbol: String
+
+    private var clamped: Double { min(max(progress, 0), 1) }
+
+    var body: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle().stroke(Color(.systemGray5), lineWidth: 8)
+                Circle().trim(from: 0, to: clamped)
+                    .stroke(color, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeOut(duration: 0.4), value: clamped)
+                Image(systemName: symbol).font(.system(size: 18)).foregroundStyle(color)
+            }
+            .frame(width: 64, height: 64)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title).font(.headline)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(value).font(.title2.weight(.bold)).monospacedDigit().foregroundStyle(color)
+                    Text(unit).font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            Image(systemName: "chevron.right").font(.footnote).foregroundStyle(.tertiary)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+    }
+}

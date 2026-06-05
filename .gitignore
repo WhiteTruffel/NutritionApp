@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Xcode – benutzerspezifisch (nicht teilen)
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+# Build-Artefakte
+build/
+DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# Abhängigkeiten (falls je genutzt)
+Pods/
+Carthage/Build/
+
+# Secrets – NIEMALS committen
+*.pem
+*.p8
+*.key
+*.env
+*.mobileprovision
+*.cer
