@@ -50,6 +50,7 @@ final class FoodEntry {
     var proteinG: Double? { scaled(food?.proteinPer100g) }
     var carbsG: Double?   { scaled(food?.carbsPer100g) }
     var fatG: Double?     { scaled(food?.fatPer100g) }
+    var satFatG: Double?  { scaled(food?.saturatedFatPer100g) }
     var fiberG: Double?   { scaled(food?.fiberPer100g) }
     var sugarG: Double?   { scaled(food?.sugarPer100g) }
     var sodiumMg: Double? { scaled(food?.sodiumMgPer100g) }

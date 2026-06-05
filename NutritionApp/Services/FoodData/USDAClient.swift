@@ -60,6 +60,7 @@ struct USDAClient: FoodSearchProvider {
                 proteinPer100g: value("203"),
                 carbsPer100g: value("205"),
                 fatPer100g: value("204"),
+                saturatedFatPer100g: value("606"),
                 fiberPer100g: value("291"),
                 sugarPer100g: value("269"),
                 sodiumMgPer100g: value("307"),   // bereits in mg
@@ -90,6 +91,7 @@ struct USDAClient: FoodSearchProvider {
         r.proteinPer100g  = r.proteinPer100g  ?? value("203")
         r.carbsPer100g    = r.carbsPer100g    ?? value("205")
         r.fatPer100g      = r.fatPer100g      ?? value("204")
+        r.saturatedFatPer100g = r.saturatedFatPer100g ?? value("606")
         r.fiberPer100g    = r.fiberPer100g    ?? value("291")
         r.sugarPer100g    = r.sugarPer100g    ?? value("269")
         r.sodiumMgPer100g = r.sodiumMgPer100g ?? value("307")

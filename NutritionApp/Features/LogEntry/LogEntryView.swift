@@ -72,6 +72,11 @@ struct LogEntryView: View {
         _mealType = State(initialValue: entry.mealType)
     }
 
+    /// Label der freien Gramm-Eingabe – als eigene „Portion" wählbar; dann tippt der
+    /// Nutzer die Menge direkt in Gramm ein (z. B. 5, 24, 120) ohne Hausmaß/Stepper.
+    private let gramOptionLabel = "Gramm (frei eingeben)"
+    private var isGramMode: Bool { servingLabel == gramOptionLabel }
+
     private var servings: [Serving] {
         let n = scannedFood?.name ?? name
         var list = n.isEmpty ? [Serving(label: "100 g/ml", grams: 100)] : Serving.presets(for: n)
@@ -87,6 +92,8 @@ struct LogEntryView: View {
             let base = (scannedFood?.aiPortionLabel?.isEmpty == false) ? scannedFood!.aiPortionLabel! : "1 Portion"
             list.insert(Serving(label: "\(base) (≈ \(Int(g.rounded())) g)", grams: g), at: 0)
         }
+        // Freie Gramm-Eingabe immer als letzte Option anbieten.
+        list.append(Serving(label: gramOptionLabel, grams: 1))
         return list
     }
 
@@ -106,17 +113,20 @@ struct LogEntryView: View {
                         ForEach(servings) { Text($0.label).tag($0.label) }
                     }
                     .onChange(of: servingLabel) { _, _ in recomputeGrams() }
-                    Stepper(value: $count, in: 0.5...20, step: 0.5) {
-                        HStack { Text("Anzahl"); Spacer()
-                            Text(count == count.rounded() ? "\(Int(count))" : String(format: "%.1f", count))
-                                .foregroundStyle(.secondary) }
+                    // Im Gramm-Modus kein Hausmaß-Stepper – die Menge wird direkt getippt.
+                    if !isGramMode {
+                        Stepper(value: $count, in: 0.5...20, step: 0.5) {
+                            HStack { Text("Anzahl"); Spacer()
+                                Text(count == count.rounded() ? "\(Int(count))" : String(format: "%.1f", count))
+                                    .foregroundStyle(.secondary) }
+                        }
+                        .onChange(of: count) { _, _ in recomputeGrams() }
                     }
-                    .onChange(of: count) { _, _ in recomputeGrams() }
                     HStack {
-                        Text("Menge gesamt")
+                        Text(isGramMode ? "Menge (g)" : "Menge gesamt")
                         Spacer()
-                        TextField("100", value: $grams, format: .number)
-                            .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 80)
+                        TextField("z. B. 120", value: $grams, format: .number)
+                            .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 90)
                         Text("g/ml").foregroundStyle(.secondary)
                     }
                 }
@@ -185,6 +195,7 @@ struct LogEntryView: View {
     }
 
     private func recomputeGrams() {
+        if isGramMode { return }   // freie Gramm-Eingabe: getippte Menge nicht aus count überschreiben
         if let s = servings.first(where: { $0.label == servingLabel }) { grams = (s.grams * count).rounded() }
     }
 

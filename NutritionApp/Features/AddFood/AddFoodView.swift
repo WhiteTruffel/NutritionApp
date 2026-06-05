@@ -432,6 +432,7 @@ struct AddFoodView: View {
         f.proteinPer100g  = r.proteinPer100g
         f.carbsPer100g    = r.carbsPer100g
         f.fatPer100g      = r.fatPer100g
+        f.saturatedFatPer100g = r.saturatedFatPer100g
         f.fiberPer100g    = r.fiberPer100g
         f.sugarPer100g    = r.sugarPer100g
         f.sodiumMgPer100g = r.sodiumMgPer100g

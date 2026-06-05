@@ -22,6 +22,7 @@ struct ScanFlowView: View {
         case parsingLabel
         case found(FoodItem)
         case notFound(String)
+        case networkError(String)                 // Server/Netz nicht erreichbar → erneut versuchen
         case manual(String)                       // unbekannter Barcode → manuell anlegen
         case labelReview(ParsedLabel, String)     // Etikett-OCR-Werte editierbar prüfen
     }
@@ -53,6 +54,25 @@ struct ScanFlowView: View {
                 case .labelReview(let parsed, let code):
                     LogEntryView(labelPrefill: parsed, presetBarcode: code) { entry in
                         onSave(entry); dismiss()
+                    }
+                case .networkError(let code):
+                    ContentUnavailableView {
+                        Label("Keine Verbindung", systemImage: "wifi.exclamationmark")
+                    } description: {
+                        Text("Die Lebensmittel-Datenbank ist gerade nicht erreichbar. Prüfe deine Internetverbindung und versuche es erneut.")
+                    } actions: {
+                        VStack(spacing: 12) {
+                            Button {
+                                handle(code)
+                            } label: {
+                                Label("Erneut versuchen", systemImage: "arrow.clockwise")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            Button("Werte selbst eingeben") { phase = .manual(code) }
+                                .padding(.top, 4)
+                        }
+                        .padding(.horizontal, 24)
                     }
                 case .notFound(let code):
                     ContentUnavailableView {
@@ -139,6 +159,7 @@ struct ScanFlowView: View {
                     food.proteinPer100g = product.nutriments?.proteins100g
                     food.carbsPer100g   = product.nutriments?.carbohydrates100g
                     food.fatPer100g     = product.nutriments?.fat100g
+                    food.saturatedFatPer100g = product.nutriments?.saturatedFat100g
                     food.fiberPer100g   = product.nutriments?.fiber100g
                     food.sugarPer100g   = product.nutriments?.sugars100g
                     food.sodiumMgPer100g = product.nutriments?.sodiumMgPer100g
@@ -148,8 +169,13 @@ struct ScanFlowView: View {
                     try? context.save()
                     phase = .found(food)
                 }
-            } catch {
+            } catch OpenFoodFactsClient.LookupError.notFound {
+                // Produkt wirklich nicht in OFF → Etikett-Foto-Pfad anbieten.
                 await MainActor.run { phase = .notFound(code) }
+            } catch {
+                // Netz/Server/Decode-Problem → nicht als „nicht gefunden" ausgeben,
+                // sondern Wiederholung anbieten (Internet, Timeout, OFF-Ausfall).
+                await MainActor.run { phase = .networkError(code) }
             }
         }
     }

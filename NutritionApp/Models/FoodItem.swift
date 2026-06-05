@@ -14,6 +14,7 @@ final class FoodItem {
     var proteinPer100g: Double?
     var carbsPer100g: Double?
     var fatPer100g: Double?
+    var saturatedFatPer100g: Double?
     var fiberPer100g: Double?
     var sugarPer100g: Double?
     var sodiumMgPer100g: Double?

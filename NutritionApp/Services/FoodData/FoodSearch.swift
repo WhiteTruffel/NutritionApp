@@ -12,6 +12,7 @@ struct FoodSearchResult: Sendable, Identifiable, Equatable {
     var proteinPer100g: Double? = nil
     var carbsPer100g: Double? = nil
     var fatPer100g: Double? = nil
+    var saturatedFatPer100g: Double? = nil
     var fiberPer100g: Double? = nil
     var sugarPer100g: Double? = nil
     var sodiumMgPer100g: Double? = nil
@@ -58,11 +59,29 @@ struct FoodSearchService: Sendable {
             }
             var merged: [FoodSearchResult] = []
             for await partial in group { merged.append(contentsOf: partial) }
-            // Reihenfolge: erst mit Nährwerten, dann generische Basis-Treffer, dann alphabetisch.
+
+            // 1) RELEVANZ zur Suchanfrage zuerst – sonst versinkt der exakte Treffer
+            //    („Corny Protein soft“) unter alphabetisch früheren Fremdtreffern.
+            let qLower = query.lowercased().trimmingCharacters(in: .whitespaces)
+            let qWords = qLower.split(separator: " ").map(String.init)
+            func relevance(_ r: FoodSearchResult) -> Int {
+                let name = r.name.lowercased()
+                if name == qLower { return 1000 }                 // exakter Name
+                var s = 0
+                if name.hasPrefix(qLower) { s += 500 }            // beginnt mit Eingabe
+                else if name.contains(qLower) { s += 250 }        // enthält ganze Eingabe
+                let matched = qWords.filter { name.contains($0) }.count
+                s += matched * 60                                 // je getroffenem Wort
+                if !qWords.isEmpty, matched == qWords.count { s += 120 }  // alle Wörter da
+                return s
+            }
+            // 2) Quelle nur noch als Gleichstand-Tiebreak (Basis-Grundnahrung leicht bevorzugt).
             func rank(_ r: FoodSearchResult) -> Int {
                 switch r.source { case "Basis": return 0; case "Zentral": return 1; default: return 2 }
             }
             return merged.sorted {
+                let a = relevance($0), b = relevance($1)
+                if a != b { return a > b }
                 if $0.hasNutrients != $1.hasNutrients { return $0.hasNutrients }
                 if rank($0) != rank($1) { return rank($0) < rank($1) }
                 return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending

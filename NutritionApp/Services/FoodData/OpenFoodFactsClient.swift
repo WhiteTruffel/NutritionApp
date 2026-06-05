@@ -30,27 +30,27 @@ struct OpenFoodFactsClient: FoodSearchProvider {
         return product
     }
 
-    // MARK: Namenssuche (cgi/search.pl). Rate-Limit ~10/min → in der UI entprellt.
+    // MARK: Namenssuche – moderne Volltextsuche (search.openfoodfacts.org / „search-a-licious“).
+    // Die alte cgi/search.pl liefert inzwischen 503/HTML und findet faktisch nichts mehr;
+    // die neue API rankt sauber nach Produktname/Marke und ist nicht so stark gedrosselt.
     func search(_ query: String) async throws -> [FoodSearchResult] {
-        var comps = URLComponents(string: "https://world.openfoodfacts.org/cgi/search.pl")!
+        var comps = URLComponents(string: "https://search.openfoodfacts.org/search")!
         comps.queryItems = [
-            URLQueryItem(name: "search_terms", value: query),
-            URLQueryItem(name: "search_simple", value: "1"),
-            URLQueryItem(name: "action", value: "process"),
-            URLQueryItem(name: "json", value: "1"),
+            URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "page_size", value: "25"),
             URLQueryItem(name: "fields",
-                         value: "code,product_name,brands,serving_size,nutrition_data_per,nutriments")
+                         value: "code,product_name,brands,serving_size,serving_quantity,nutriments")
         ]
         var req = URLRequest(url: comps.url!)
         req.setValue(Self.userAgent, forHTTPHeaderField: "User-Agent")
+        req.timeoutInterval = 12
 
         let (data, response) = try await URLSession.shared.data(for: req)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             throw LookupError.badResponse
         }
-        let envelope = try JSONDecoder().decode(OFFSearchEnvelope.self, from: data)
-        return envelope.products.compactMap { p -> FoodSearchResult? in
+        let envelope = try JSONDecoder().decode(OFFSearchHitsEnvelope.self, from: data)
+        return envelope.hits.compactMap { p -> FoodSearchResult? in
             guard let name = p.productName, !name.isEmpty else { return nil }
             let n = p.nutriments
             return FoodSearchResult(
@@ -63,6 +63,7 @@ struct OpenFoodFactsClient: FoodSearchProvider {
                 proteinPer100g: n?.proteins100g,
                 carbsPer100g: n?.carbohydrates100g,
                 fatPer100g: n?.fat100g,
+                saturatedFatPer100g: n?.saturatedFat100g,
                 fiberPer100g: n?.fiber100g,
                 sugarPer100g: n?.sugars100g,
                 sodiumMgPer100g: n?.sodiumMgPer100g,
