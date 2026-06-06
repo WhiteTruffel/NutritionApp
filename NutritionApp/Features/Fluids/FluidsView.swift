@@ -62,12 +62,14 @@ struct FluidsView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Trinken")
+            .accessibilityIdentifier("screen.fluids")
             .overlay(alignment: .bottom) { if showUndo { undoBar } }
         }
         .onAppear { now = Date() }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { now = $0 }
         .alert("Wasser hinzufügen", isPresented: $showCustomWater) {
             TextField("Menge in ml", text: $customWaterText).keyboardType(.numberPad)
+                .accessibilityIdentifier("fluids.water.customField")
             Button("Hinzufügen") {
                 if let ml = Double(customWaterText), ml > 0 { addWater(ml) }
                 customWaterText = ""
@@ -113,9 +115,13 @@ struct FluidsView: View {
                 .font(.caption2).foregroundStyle(.tertiary)
             HStack(spacing: 8) {
                 quickButton("Glas", "200 ml") { addWater(200) }
+                    .accessibilityIdentifier("fluids.water.add200")
                 quickButton("+250", "ml") { addWater(250) }
+                    .accessibilityIdentifier("fluids.water.add250")
                 quickButton("+500", "ml") { addWater(500) }
+                    .accessibilityIdentifier("fluids.water.add500")
                 quickButton("…", "frei") { showCustomWater = true }
+                    .accessibilityIdentifier("fluids.water.addCustom")
             }
         }
         .cardBackground()
@@ -136,6 +142,7 @@ struct FluidsView: View {
                 Text("\(Int(activeCaffeine.rounded()))")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .contentTransition(.numericText()).monospacedDigit()
+                    .accessibilityIdentifier("fluids.caffeine.activeValue")
                 Text("mg aktiv").font(.subheadline).foregroundStyle(.secondary)
             }
             HStack(spacing: 8) {
@@ -167,6 +174,7 @@ struct FluidsView: View {
                 }
                 .font(.subheadline)
             }
+            .accessibilityIdentifier("fluids.caffeineHistory.open")
         }
         .cardBackground()
     }
@@ -246,6 +254,7 @@ struct FluidsView: View {
                         .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("fluids.drink.\(d.name)")
                 }
             }
         }
@@ -276,8 +285,10 @@ struct FluidsView: View {
                     Button { delete(e) } label: {
                         Image(systemName: "trash").font(.caption).foregroundStyle(.red)
                     }.buttonStyle(.plain)
+                    .accessibilityIdentifier("fluids.entry.delete")
                 }
                 .padding(.vertical, 8)
+                .accessibilityIdentifier(e.kind == .water ? "fluids.entry.water" : "fluids.entry.caffeine")
                 if e.id != todayIntakes.last?.id { Divider() }
             }
         }
@@ -324,6 +335,7 @@ struct FluidsView: View {
             Spacer()
             Button("Rückgängig") { undoLast() }
                 .font(.subheadline.weight(.semibold)).foregroundStyle(.yellow)
+                .accessibilityIdentifier("fluids.undo")
         }
         .padding(.horizontal, 18).padding(.vertical, 12)
         .background(Color.black.opacity(0.85), in: Capsule())
