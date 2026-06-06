@@ -1,0 +1,175 @@
+# Test matrix for NutritionApp Maestro flows.
+# Each case is sent to DeepSeek (via OpenRouter) and becomes one flow YAML
+# in flows/generated/. Edit/add cases here; rerun generate_flows.py.
+# Conventions live in generate_flows.py (system prompt), not here.
+
+cases:
+  - id: water_quick_add_250
+    goal: >
+      Auf dem Trinken-Screen Wasser per Quick-Button +250 ml loggen
+      (id fluids.water.add250). Danach in der Tagesliste verifizieren, dass
+      ein Wasser-Eintrag existiert (id fluids.entry.water, liegt unter dem
+      Fold, hinscrollen). Aufraeumen: Eintrag loeschen, verifizieren dass weg.
+
+  - id: water_custom_entry
+    goal: >
+      Auf dem Trinken-Screen die freie Wasser-Eingabe oeffnen
+      (id fluids.water.addCustom), in das Feld (id fluids.water.customField)
+      den Wert 333 eintippen und bestaetigen. Verifizieren dass ein
+      Wasser-Eintrag mit 333 ml in der Tagesliste steht. Aufraeumen: loeschen.
+
+  - id: undo_after_add
+    goal: >
+      Espresso loggen (id fluids.drink.Espresso), dann sofort den
+      Rueckgaengig-Button (id fluids.undo) tippen. Verifizieren dass danach
+      KEIN Koffein-Eintrag in der Tagesliste steht (Espresso erzeugt sonst
+      Koffein UND Wasser, Undo muss beide entfernen).
+
+  - id: multi_drink_sum
+    goal: >
+      Espresso (id fluids.drink.Espresso) und danach Doppio
+      (id fluids.drink.Doppio) loggen. Verifizieren dass der aktive
+      Koffein-Wert (id fluids.caffeine.activeValue) sichtbar ist und die
+      Tagesliste mehrere Eintraege hat. Aufraeumen: alle Eintraege loeschen.
+
+  - id: tab_roundtrip_persistence
+    goal: >
+      Espresso loggen, dann alle Tabs durchschalten (ids tab.heute,
+      tab.tagebuch, tab.naehrstoffe, tab.koerper, zurueck zu tab.trinken).
+      Verifizieren dass der Koffein-Eintrag die Tab-Wechsel ueberlebt hat.
+      Aufraeumen: loeschen.
+
+  - id: relaunch_persistence
+    goal: >
+      Espresso loggen, App stoppen und neu starten (launchApp mit
+      stopApp true, NIEMALS clearState). Verifizieren dass der
+      Koffein-Eintrag den Neustart ueberlebt hat. Aufraeumen: loeschen.
+
+  - id: empty_history_open
+    goal: >
+      Erst per Pre-Clean ALLE Eintraege der Tagesliste loeschen, dann die
+      Koffein-Historie oeffnen (id fluids.caffeineHistory.open) und
+      verifizieren dass "Koffein im K.*rper" rendert, kein Crash bei
+      leerem Datenbestand (Boundary-Fall des Crash-Musters aus Issue #5).
+
+  - id: dashboard_quick_add
+    goal: >
+      Auf dem Heute-Tab (Punkt-Tap 10%,96%) Wasser per Quick-Button loggen
+      (id overview.quick.wasser, fuegt 250 ml hinzu). Dann zum Trinken-Tab
+      wechseln (Punkt-Tap 50%,96%) und verifizieren dass der Wasser-Eintrag
+      in der Tagesliste angekommen ist. Aufraeumen: loeschen.
+
+  # ---- V2: Smoke-Tests aller Tabs (kein Crash beim Rendern und Scrollen) ----
+
+  - id: smoke_heute_tab
+    goal: >
+      Heute-Tab oeffnen (Tap 62,822). Verifizieren dass die Karten
+      "Ernährung", "Belastung" und "Erholung" sichtbar sind. Dann nach
+      unten scrollen (2x swipe UP) und wieder nach oben (2x swipe DOWN),
+      danach erneut "Ernährung" asserten. Kein Crash beim Scrollen.
+
+  - id: smoke_tagebuch_tab
+    goal: >
+      Tagebuch-Tab oeffnen (Tap 130,822). extendedWaitUntil auf "Tagebuch"
+      oder "Tagessumme" (10 s). Einmal nach unten und oben scrollen,
+      danach assert dass "Tagessumme" sichtbar ist (scrollUntilVisible
+      DOWN, optional). Kein Crash.
+
+  - id: smoke_naehrstoffe_tab
+    goal: >
+      Naehrstoffe-Tab oeffnen (Tap 269,822). Warten bis entweder
+      "Hauptnährstoffe" oder der Leer-Zustand "Erfasse Lebensmittel"
+      sichtbar ist (beide optional pruefen, mindestens einer muss da sein:
+      assert auf "Hauptn.*hrstoffe" optional, dann assert auf
+      "Erfasse Lebensmittel" optional). Einmal scrollen. Kein Crash.
+
+  - id: smoke_koerper_segmente
+    goal: >
+      Koerper-Tab oeffnen (Tap 340,822). Verifizieren dass die Segmente
+      "Erholung" und "Gewicht" sichtbar sind. Auf "Gewicht" tippen,
+      waitForAnimationToEnd, dann zurueck auf "Erholung" tippen und
+      verifizieren dass "Trend" sichtbar ist. Kein Crash beim
+      Segment-Wechsel.
+
+  # ---- V2: Cross-Tab Datenkonsistenz ----
+
+  - id: overview_kaffee_quick
+    goal: >
+      Heute-Tab (Tap 62,822), Kaffee per Quick-Button loggen
+      (id overview.quick.kaffee, erzeugt 95 mg Koffein UND 200 ml Wasser).
+      Zum Trinken-Tab (Tap 198,822), in der Tagesliste verifizieren dass
+      ein Koffein-Eintrag existiert. Aufraeumen: alle Eintraege loeschen.
+
+  - id: cross_tab_data_integrity
+    goal: >
+      Heute-Tab (Tap 62,822): Wasser loggen (id overview.quick.wasser).
+      Trinken-Tab (Tap 198,822): Espresso loggen (id fluids.drink.Espresso,
+      Drink-Grid liegt unter dem Fold, hinscrollen). Dann in der Tagesliste
+      verifizieren: mindestens ein Koffein-Eintrag UND Wasser-Eintraege
+      sichtbar. Aufraeumen: ALLE Eintraege loeschen (repeat bis 8),
+      verifizieren dass Liste leer.
+
+  # ---- V2: Fluids-Varianten und Grenzwerte ----
+
+  - id: fluids_glas_200
+    goal: >
+      Trinken-Tab: Wasser per "Glas"-Button loggen (id fluids.water.add200,
+      200 ml). In der Tagesliste den Wasser-Eintrag verifizieren
+      (Text "200 ml" sichtbar). Aufraeumen: loeschen.
+
+  - id: fluids_add_500
+    goal: >
+      Trinken-Tab: Wasser per +500-Button loggen (id fluids.water.add500).
+      In der Tagesliste "500 ml" verifizieren. Aufraeumen: loeschen.
+
+  - id: fluids_coldbrew_high_dose
+    goal: >
+      Trinken-Tab: Cold Brew loggen (id "fluids.drink.Cold Brew", 200 mg,
+      Drink-Grid unter dem Fold). Danach optional pruefen ob eine
+      Einzeldosis-Warnung erscheint (assert "Einzeldosis" optional, haengt
+      vom Gewichtsprofil ab). Eintrag in Tagesliste verifizieren ("200 mg").
+      Aufraeumen: beide Eintraege loeschen.
+
+  - id: custom_water_zero_reject
+    goal: >
+      Trinken-Tab: freie Wasser-Eingabe oeffnen (id fluids.water.addCustom),
+      in den System-Alert "0" eingeben (inputText, Feld ist autofokussiert),
+      "Hinzufügen" tippen. GRENZWERT-TEST: die App akzeptiert nur ml > 0,
+      es darf also KEIN Wasser-Eintrag entstehen: zur Tagesliste scrollen
+      (scrollUntilVisible DOWN auf fluids.entry.water, timeout 8000,
+      optional) und assertNotVisible auf fluids.entry.water.
+
+  - id: custom_water_huge_value
+    goal: >
+      Trinken-Tab: freie Wasser-Eingabe (id fluids.water.addCustom), "99999"
+      eingeben, "Hinzufügen". GRENZWERT-TEST: App darf nicht crashen,
+      Eintrag "99999 ml" muss in der Tagesliste stehen, der
+      Fluessigkeits-Fortschritt oben muss weiterhin rendern (nach dem
+      Verifizieren nach oben scrollen und fluids.water.add250 asserten).
+      Aufraeumen: Eintrag loeschen.
+
+  - id: rapid_taps_stress
+    goal: >
+      STRESS-TEST: Trinken-Tab, Espresso-Button (id fluids.drink.Espresso)
+      FUENFMAL hintereinander tippen (repeat times 5 mit tapOn + kurzem
+      waitForAnimationToEnd). Erzeugt 10 Eintraege (5x Koffein + 5x Wasser).
+      Verifizieren dass Koffein-Eintraege da sind, Historie oeffnen
+      (id fluids.caffeineHistory.open) und "Koffein im K.*rper" asserten,
+      zurueck via Tap 198,822. Aufraeumen: repeat times 12 ALLE Eintraege
+      loeschen, Liste leer verifizieren.
+
+  # ---- V2: Der Original-Bug, App-uebergreifend (Apple Health) ----
+
+  - id: health_desync_v2
+    goal: >
+      DER ORIGINAL-BUG-PFAD, App-uebergreifend: 1) Trinken-Tab, Espresso
+      loggen, Koffein-Eintrag verifizieren. 2) Apple Health oeffnen
+      (launchApp com.apple.Health, stopApp true) und nach Regel 12
+      verfahren (Onboarding-Loop, zweimal Summary-Tab-Tap, Show All
+      Health Data, Caffeine, Show All Data, Edit, Delete All, optionale
+      Bestaetigung). 3) Zurueck zur NutritionApp (launchApp
+      com.tobiaskoch.NutritionApp OHNE stopApp, damit der Zustand erhalten
+      bleibt), Trinken-Tab, Koffein-Historie oeffnen
+      (id fluids.caffeineHistory.open), "Koffein im K.*rper" asserten:
+      KEIN CRASH nach externem Health-Delete. Aufraeumen: Eintraege in
+      der App loeschen.
