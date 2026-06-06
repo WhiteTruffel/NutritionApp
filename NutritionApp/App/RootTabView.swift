@@ -10,7 +10,9 @@ struct RootTabView: View {
     private let health = NutritionHealthStore()
 
     @AppStorage("lastSeenVersion") private var lastSeenVersion = ""
+    @AppStorage("didOnboard") private var didOnboard = false
     @State private var showWhatsNew = false
+    @State private var showOnboarding = false
 
     var body: some View {
         TabView {
@@ -30,9 +32,16 @@ struct RootTabView: View {
                 .tabItem { Label("Körper", systemImage: "figure.run") }
         }
         .sheet(isPresented: $showWhatsNew) { WhatsNewView() }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView { didOnboard = true; showOnboarding = false }
+        }
         .task {
-            // „Neu in dieser Version" einmalig nach einem Update zeigen.
-            if lastSeenVersion != Theme.appVersion {
+            // Erststart: Onboarding zeigen (vor „Neu in dieser Version").
+            if !didOnboard {
+                showOnboarding = true
+                lastSeenVersion = Theme.appVersion   // „What's New" beim Erststart unterdrücken
+            } else if lastSeenVersion != Theme.appVersion {
+                // „Neu in dieser Version" einmalig nach einem Update zeigen.
                 showWhatsNew = true
                 lastSeenVersion = Theme.appVersion
             }

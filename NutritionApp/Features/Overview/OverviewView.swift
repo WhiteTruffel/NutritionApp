@@ -71,6 +71,8 @@ struct OverviewView: View {
 
                     quickActions
                     statsStrip
+                    consistencyCard
+                    trendsEntry
                 }
                 .padding(16)
             }
@@ -128,6 +130,82 @@ struct OverviewView: View {
             }
             .frame(maxWidth: .infinity).padding(.vertical, 12)
             .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: Konsistenz / Streak (BL21 – bewusst nicht-wertend, ermutigend)
+
+    private var loggedDays: Set<Date> {
+        Set(entries.map { Calendar.current.startOfDay(for: $0.date) })
+    }
+    /// Tage in Folge mit mindestens einem Eintrag. „Heute noch leer" bricht die Serie NICHT,
+    /// solange gestern erfasst wurde – so fühlt sich der Tag nicht wie ein Versagen an.
+    private var streak: Int {
+        let cal = Calendar.current
+        var day = cal.startOfDay(for: .now)
+        if !loggedDays.contains(day) { day = cal.date(byAdding: .day, value: -1, to: day) ?? day }
+        var count = 0
+        while loggedDays.contains(day) {
+            count += 1
+            guard let prev = cal.date(byAdding: .day, value: -1, to: day) else { break }
+            day = prev
+        }
+        return count
+    }
+    private var last7: [(date: Date, logged: Bool)] {
+        let cal = Calendar.current
+        return (0..<7).reversed().map { off in
+            let d = cal.date(byAdding: .day, value: -off, to: cal.startOfDay(for: .now)) ?? .now
+            return (d, loggedDays.contains(d))
+        }
+    }
+    private var daysLogged7: Int { last7.filter(\.logged).count }
+
+    private var consistencyCard: some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Image(systemName: "flame.fill").foregroundStyle(.orange)
+                    Text(streak > 0 ? "\(streak) Tage in Folge" : "Heute starten?")
+                        .font(.headline)
+                }
+                Text(streak > 0 ? "\(daysLogged7) von 7 Tagen erfasst – schön dabeizubleiben."
+                                : "Jeder Eintrag zählt – leg einfach los.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            HStack(spacing: 5) {
+                ForEach(last7, id: \.date) { d in
+                    Circle()
+                        .fill(d.logged ? Theme.accent : Color(.systemGray5))
+                        .frame(width: 9, height: 9)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: Trends-Einstieg
+
+    private var trendsEntry: some View {
+        NavigationLink { TrendsView() } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "chart.xyaxis.line").font(.title3).foregroundStyle(Theme.accent)
+                    .frame(width: 32)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Trends").font(.headline)
+                    Text("Ruhepuls, Schritte, Schlaf, Gewicht … über Zeit")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.footnote).foregroundStyle(.tertiary)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity)
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
     }

@@ -37,6 +37,17 @@ struct LoadDetailView: View {
                     Text("Heute")
                 }
 
+                Section {
+                    HKTrendCard(metric: .steps, range: .d7, store: health)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .listRowBackground(Color.clear)
+                    NavigationLink { TrendsView() } label: {
+                        Label("Alle Trends ansehen", systemImage: "chart.xyaxis.line")
+                    }
+                } header: {
+                    Text("Trend")
+                }
+
                 if !workouts.isEmpty {
                     Section("Letzte Trainings") {
                         ForEach(workouts.prefix(12)) { w in

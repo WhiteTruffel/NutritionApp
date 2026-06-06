@@ -18,6 +18,7 @@ struct RecoveryDetailView: View {
             } else {
                 recommendationSection
                 recoverySection
+                trendSection
                 sleepSection
                 regenerationSection
                 Section {
@@ -66,6 +67,21 @@ struct RecoveryDetailView: View {
                 if let hrv = r.hrv { detailRow("Herzraten­variabilität", String(format: "%.0f ms", hrv)) }
                 if let rhr = r.rhr { detailRow("Ruhepuls", String(format: "%.0f bpm", rhr)) }
             }
+        }
+    }
+
+    // MARK: Trend (Ruhepuls über 7 Tage + Einstieg in alle Trends)
+
+    private var trendSection: some View {
+        Section {
+            HKTrendCard(metric: .restingHR, range: .d7, store: health)
+                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                .listRowBackground(Color.clear)
+            NavigationLink { TrendsView() } label: {
+                Label("Alle Trends ansehen", systemImage: "chart.xyaxis.line")
+            }
+        } header: {
+            Text("Trend")
         }
     }
 

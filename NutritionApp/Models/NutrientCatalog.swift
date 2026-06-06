@@ -35,6 +35,9 @@ enum NutrientCatalog {
         NutrientDef(key: "vitaminB6",  label: "Vitamin B6",           unit: "mg", rda: 1.4,  group: .vitamin, usdaNumber: "415"),
         NutrientDef(key: "folate",     label: "Folat (B9)",           unit: "µg", rda: 300,  group: .vitamin, usdaNumber: "417"),
         NutrientDef(key: "vitaminB12", label: "Vitamin B12",          unit: "µg", rda: 4,    group: .vitamin, usdaNumber: "418"),
+        NutrientDef(key: "pantothenic", label: "Vitamin B5 (Pantothensäure)", unit: "mg", rda: 6, group: .vitamin, usdaNumber: "410"),
+        NutrientDef(key: "biotin",     label: "Vitamin B7 (Biotin)",  unit: "µg", rda: 40,   group: .vitamin, usdaNumber: "416"),
+        NutrientDef(key: "choline",    label: "Cholin",               unit: "mg", rda: 400,  group: .vitamin, usdaNumber: "421"),
         // Mineralstoffe
         NutrientDef(key: "calcium",    label: "Kalzium",   unit: "mg", rda: 1000, group: .mineral, usdaNumber: "301"),
         NutrientDef(key: "iron",       label: "Eisen",     unit: "mg", rda: 14,   group: .mineral, usdaNumber: "303"),
@@ -47,6 +50,10 @@ enum NutrientCatalog {
         NutrientDef(key: "selenium",   label: "Selen",     unit: "µg", rda: 60,   group: .mineral, usdaNumber: "317"),
         // Weitere (Fett-Detail)
         NutrientDef(key: "saturatedFat", label: "Gesättigte Fettsäuren", unit: "g",  rda: 20,  group: .other, usdaNumber: "606"),
+        NutrientDef(key: "monoFat",      label: "Einfach ungesättigt",   unit: "g",  rda: 25,  group: .other, usdaNumber: "645"),
+        NutrientDef(key: "polyFat",      label: "Mehrfach ungesättigt",  unit: "g",  rda: 15,  group: .other, usdaNumber: "646"),
+        NutrientDef(key: "omega3",       label: "Omega-3 (ALA)",         unit: "g",  rda: 2,   group: .other, usdaNumber: "851"),
+        NutrientDef(key: "transFat",     label: "Trans-Fettsäuren",      unit: "g",  rda: 2,   group: .other, usdaNumber: "605"),
         NutrientDef(key: "cholesterol",  label: "Cholesterin",           unit: "mg", rda: 300, group: .other, usdaNumber: "601"),
     ]
 

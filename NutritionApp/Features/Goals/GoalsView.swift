@@ -124,6 +124,11 @@ struct GoalsView: View {
                         Label("KI-Erkennung aktiv", systemImage: "checkmark.seal.fill")
                             .foregroundStyle(.green).font(.caption)
                     }
+                    if let u = URL(string: "https://aistudio.google.com/app/apikey") {
+                        Link(destination: u) {
+                            Label("Gemini-Key erstellen (aistudio.google.com)", systemImage: "safari").font(.caption)
+                        }
+                    }
                 } header: {
                     Text("KI-Bilderkennung (Gericht-Foto)")
                 } footer: {
@@ -140,6 +145,11 @@ struct GoalsView: View {
                     } else {
                         Label("Eigener USDA-Key aktiv", systemImage: "checkmark.seal.fill")
                             .foregroundStyle(.green).font(.caption)
+                    }
+                    if let u = URL(string: "https://fdc.nal.usda.gov/api-key-signup") {
+                        Link(destination: u) {
+                            Label("USDA-Key erstellen (fdc.nal.usda.gov)", systemImage: "safari").font(.caption)
+                        }
                     }
                 } header: {
                     Text("Nährwert-Datenbank (USDA)")

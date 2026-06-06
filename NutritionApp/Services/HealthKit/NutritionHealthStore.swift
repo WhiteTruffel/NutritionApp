@@ -33,9 +33,9 @@ actor NutritionHealthStore {
                 share.insert(t); read.insert(t)
             }
         }
-        // Aktive Kalorien (Sport) nur lesen – für das „+ Sport"-Budget im Dashboard.
-        if let activeEnergy = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) {
-            read.insert(activeEnergy)
+        // Aktive Kalorien + Trainingszeit (Sport) nur lesen – Dashboard-Budget & Trends.
+        for id in [HKQuantityTypeIdentifier.activeEnergyBurned, .appleExerciseTime] {
+            if let t = HKQuantityType.quantityType(forIdentifier: id) { read.insert(t) }
         }
         // Workouts + Distanzen nur lesen – für den Training-Reiter.
         read.insert(HKObjectType.workoutType())
@@ -255,6 +255,49 @@ actor NutritionHealthStore {
                 cont.resume(returning: kcal)
             }
             store.execute(query)
+        }
+    }
+
+    // MARK: Tagesreihen für Trends (generisch)
+
+    /// Passende Einheit je Kennung (HKUnit ist nicht Sendable → intern ableiten, nicht übergeben).
+    private static func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
+        switch id {
+        case .restingHeartRate:         return HKUnit.count().unitDivided(by: .minute())
+        case .heartRateVariabilitySDNN: return .secondUnit(with: .milli)
+        case .stepCount:                return .count()
+        case .appleExerciseTime:        return .minute()
+        case .activeEnergyBurned:       return .kilocalorie()
+        case .bodyMass:                 return .gramUnit(with: .kilo)
+        case .bodyFatPercentage:        return .percent()
+        default:                        return .count()
+        }
+    }
+
+    /// Tageswerte einer Quantity über `days` Tage – Summe (Schritte, kcal) oder Tagesschnitt
+    /// (Ruhepuls, HRV, Gewicht). Lücken (Tage ohne Messung) werden ausgelassen.
+    func dailySeries(_ id: HKQuantityTypeIdentifier, days: Int, stat: TrendStat) async -> [DayValue] {
+        guard HKHealthStore.isHealthDataAvailable(),
+              let type = HKQuantityType.quantityType(forIdentifier: id) else { return [] }
+        let unit = Self.unit(for: id)
+        let cal = Calendar.current
+        let anchor = cal.startOfDay(for: .now)
+        guard let start = cal.date(byAdding: .day, value: -(days - 1), to: anchor) else { return [] }
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: .now)
+        let options: HKStatisticsOptions = (stat == .sum) ? .cumulativeSum : .discreteAverage
+        return await withCheckedContinuation { (cont: CheckedContinuation<[DayValue], Never>) in
+            let q = HKStatisticsCollectionQuery(quantityType: type, quantitySamplePredicate: predicate,
+                                                options: options, anchorDate: anchor,
+                                                intervalComponents: DateComponents(day: 1))
+            q.initialResultsHandler = { _, collection, _ in
+                var out: [DayValue] = []
+                collection?.enumerateStatistics(from: start, to: .now) { s, _ in
+                    let qty = (stat == .sum) ? s.sumQuantity() : s.averageQuantity()
+                    if let v = qty?.doubleValue(for: unit) { out.append(DayValue(date: s.startDate, value: v)) }
+                }
+                cont.resume(returning: out)
+            }
+            store.execute(q)
         }
     }
 
@@ -640,6 +683,12 @@ struct ImportedMeal: Sendable {
 
 /// Eine datierte Schlafnacht (Stunden, Datum = Aufwachtag).
 struct SleepNight: Sendable { let date: Date; let hours: Double }
+
+/// Ein Tageswert einer Trend-Reihe (Datum = Tagesbeginn).
+struct DayValue: Sendable, Identifiable { let date: Date; let value: Double; var id: Date { date } }
+
+/// Aggregationsart einer Tagesreihe.
+enum TrendStat: Sendable { case sum, average }
 
 /// Sendable-Snapshot der aus Apple Health gelesenen Körperdaten.
 struct BodyData: Sendable {
