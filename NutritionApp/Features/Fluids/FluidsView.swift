@@ -288,6 +288,7 @@ struct FluidsView: View {
                     .accessibilityIdentifier("fluids.entry.delete")
                 }
                 .padding(.vertical, 8)
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier(e.kind == .water ? "fluids.entry.water" : "fluids.entry.caffeine")
                 if e.id != todayIntakes.last?.id { Divider() }
             }
