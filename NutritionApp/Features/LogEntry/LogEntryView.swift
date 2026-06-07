@@ -20,6 +20,7 @@ struct LogEntryView: View {
     @State private var servingLabel = "100 g/ml"
     @State private var count: Double = 1
     @State private var mealType: MealType
+    @State private var date: Date = .now      // Zeitpunkt der Mahlzeit (frei wählbar, auch Vergangenheit)
     @State private var kcal = ""
     @State private var protein = ""
     @State private var carbs = ""
@@ -70,6 +71,7 @@ struct LogEntryView: View {
         self.prefillName = nil
         self.onSave = onSave
         _mealType = State(initialValue: entry.mealType)
+        _date = State(initialValue: entry.date)
     }
 
     /// Label der freien Gramm-Eingabe – als eigene „Portion" wählbar; dann tippt der
@@ -106,6 +108,8 @@ struct LogEntryView: View {
                     Picker("Mahlzeit", selection: $mealType) {
                         ForEach(MealType.allCases) { Text($0.label).tag($0) }
                     }
+                    DatePicker("Zeitpunkt", selection: $date, in: ...Date(),
+                               displayedComponents: [.date, .hourAndMinute])
                 }
 
                 Section("Portion") {
@@ -236,6 +240,7 @@ struct LogEntryView: View {
         if let entry = editingEntry {
             entry.grams = grams
             entry.mealType = mealType
+            entry.date = date                            // gewählten Zeitpunkt übernehmen
             entry.syncedToHealthKit = false              // löst Re-Sync aus
             entry.food?.lastGrams = grams
             try? context.save()
@@ -271,7 +276,7 @@ struct LogEntryView: View {
         food.lastFetched = .now
         food.useCount += 1                                // A7: Häufigkeit
         food.lastGrams = grams                            // A2: letzte Portion merken
-        let entry = FoodEntry(grams: grams > 0 ? grams : 100, mealType: mealType, food: food)
+        let entry = FoodEntry(date: date, grams: grams > 0 ? grams : 100, mealType: mealType, food: food)
         onSave(entry)
         dismiss()
     }
