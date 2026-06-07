@@ -1,0 +1,56 @@
+/* Onboarding */
+"onboarding.region.title" = "Where are you?";
+"onboarding.region.subtitle" = "Select your region for correct settings";
+"onboarding.language.title" = "Your language";
+"onboarding.language.subtitle" = "Choose your preferred language";
+"onboarding.format.title" = "Units & format";
+"onboarding.format.subtitle" = "Metric or Imperial";
+"onboarding.personal.title" = "About you";
+"onboarding.personal.subtitle" = "Height, age, skin type";
+"onboarding.confirmation.title" = "All set!";
+"onboarding.confirmation.subtitle" = "Your app is ready. Tap 'Start' to begin.";
+"onboarding.continue" = "Continue";
+"onboarding.start" = "Start";
+"onboarding.height" = "Height";
+"onboarding.age" = "Age";
+"onboarding.gender" = "Gender";
+"onboarding.skin_type" = "Skin Type";
+
+/* Trinken (Fluids) */
+"trinken.weekly_rings" = "Weekly goal";
+"trinken.monday" = "Mon";
+"trinken.tuesday" = "Tue";
+"trinken.wednesday" = "Wed";
+"trinken.thursday" = "Thu";
+"trinken.friday" = "Fri";
+"trinken.saturday" = "Sat";
+"trinken.sunday" = "Sun";
+"trinken.goal_met" = "Goal met";
+"trinken.almost_there" = "Almost there";
+"trinken.not_met" = "Not met";
+
+/* HRV */
+"hrv.title" = "Heart Rate Variability";
+"hrv.measure" = "Measure HRV";
+"hrv.measuring" = "Measuring...";
+"hrv.advice.great" = "Your recovery is excellent. Crush the day!";
+"hrv.advice.good" = "You're good to train today.";
+"hrv.advice.moderate" = "Consider moderate activity today.";
+"hrv.advice.rest" = "Take it easy today. Rest up.";
+
+/* Reminders */
+"reminders.morning" = "Good morning! Let's crush today.";
+"reminders.breakfast" = "Time for breakfast. Log your meal?";
+"reminders.lunch" = "Lunch time! Stay hydrated.";
+"reminders.dinner" = "Dinner time!";
+"reminders.bedtime" = "Time to wind down.";
+"reminders.snooze_30" = "Snooze 30 min";
+"reminders.snooze_60" = "Snooze 60 min";
+
+/* Settings */
+"settings.region" = "Region";
+"settings.language" = "Language";
+"settings.units" = "Units";
+"settings.personal" = "Personal Info";
+"settings.reminders" = "Reminders";
+"settings.recommend_app" = "Recommend App";

@@ -1,0 +1,56 @@
+/* Onboarding */
+"onboarding.region.title" = "Wo bist du?";
+"onboarding.region.subtitle" = "Wähle deine Region für die richtigen Einstellungen";
+"onboarding.language.title" = "Deine Sprache";
+"onboarding.language.subtitle" = "Wähle deine bevorzugte Sprache";
+"onboarding.format.title" = "Einheiten & Format";
+"onboarding.format.subtitle" = "Metrisch oder Imperial";
+"onboarding.personal.title" = "Über dich";
+"onboarding.personal.subtitle" = "Größe, Alter, Hauttyp";
+"onboarding.confirmation.title" = "Alles bereit!";
+"onboarding.confirmation.subtitle" = "Deine App ist einsatzbereit. Tippe 'Start', um zu beginnen.";
+"onboarding.continue" = "Weiter";
+"onboarding.start" = "Start";
+"onboarding.height" = "Größe";
+"onboarding.age" = "Alter";
+"onboarding.gender" = "Geschlecht";
+"onboarding.skin_type" = "Hauttyp";
+
+/* Trinken (Fluids) */
+"trinken.weekly_rings" = "Wochenziel";
+"trinken.monday" = "Mo";
+"trinken.tuesday" = "Di";
+"trinken.wednesday" = "Mi";
+"trinken.thursday" = "Do";
+"trinken.friday" = "Fr";
+"trinken.saturday" = "Sa";
+"trinken.sunday" = "So";
+"trinken.goal_met" = "Ziel erreicht";
+"trinken.almost_there" = "Fast geschafft";
+"trinken.not_met" = "Ziel nicht erreicht";
+
+/* HRV */
+"hrv.title" = "Herzfrequenzvariabilität";
+"hrv.measure" = "HRV messen";
+"hrv.measuring" = "Wird gemessen...";
+"hrv.advice.great" = "Deine Erholung ist hervorragend. Gib alles heute!";
+"hrv.advice.good" = "Du kannst heute trainieren.";
+"hrv.advice.moderate" = "Nimm es heute etwas leichter.";
+"hrv.advice.rest" = "Nimm es heute ruhig an. Erhole dich aus.";
+
+/* Reminders */
+"reminders.morning" = "Guten Morgen! Lass uns heute gut trainieren.";
+"reminders.breakfast" = "Zeit für Frühstück. Mahlzeit eintragen?";
+"reminders.lunch" = "Mittagszeit! Bleib hydratisiert.";
+"reminders.dinner" = "Abendessenszeit!";
+"reminders.bedtime" = "Zeit zum Herunterkommen.";
+"reminders.snooze_30" = "30 Min Pause";
+"reminders.snooze_60" = "60 Min Pause";
+
+/* Settings */
+"settings.region" = "Region";
+"settings.language" = "Sprache";
+"settings.units" = "Einheiten";
+"settings.personal" = "Persönliche Info";
+"settings.reminders" = "Erinnerungen";
+"settings.recommend_app" = "App empfehlen";
