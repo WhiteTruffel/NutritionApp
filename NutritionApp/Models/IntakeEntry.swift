@@ -13,16 +13,20 @@ final class IntakeEntry {
     var date: Date
     var kindRaw: String
     var amount: Double
+    /// UUID des zugehörigen HealthKit-Samples (Issue #2: Lösch-Propagation App → Health).
+    /// Optional, weil Bestandsdaten vor diesem Feld keinen Wert haben (SwiftData-Lightweight-Migration).
+    var healthKitUUID: UUID?
 
     var kind: IntakeKind {
         get { IntakeKind(rawValue: kindRaw) ?? .water }
         set { kindRaw = newValue.rawValue }
     }
 
-    init(id: UUID = UUID(), date: Date = .now, kind: IntakeKind, amount: Double) {
+    init(id: UUID = UUID(), date: Date = .now, kind: IntakeKind, amount: Double, healthKitUUID: UUID? = nil) {
         self.id = id
         self.date = date
         self.kindRaw = kind.rawValue
         self.amount = amount
+        self.healthKitUUID = healthKitUUID
     }
 }

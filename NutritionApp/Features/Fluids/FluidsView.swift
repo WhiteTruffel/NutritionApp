@@ -358,11 +358,20 @@ struct FluidsView: View {
     }
 
     private func undoLast() {
+        // HK-UUIDs VOR dem SwiftData-Delete sichern (gelöschte Models nicht mehr anfassen).
+        let hkRefs: [(uuid: UUID, kind: IntakeKind)] = lastAdded.compactMap { e in
+            e.healthKitUUID.map { ($0, e.kind) }
+        }
         for e in lastAdded { context.delete(e) }
         try? context.save()
         lastAdded = []
         now = Date()
         withAnimation { showUndo = false }
+        if !hkRefs.isEmpty {
+            Task {
+                for ref in hkRefs { await health.deleteIntakeSample(uuid: ref.uuid, kind: ref.kind) }
+            }
+        }
     }
 
     private func addWater(_ ml: Double) {
@@ -371,7 +380,16 @@ struct FluidsView: View {
         try? context.save()
         now = Date()
         flashUndo("Wasser +\(Int(ml)) ml", [e])
-        Task { await health.saveWater(ml: ml) }
+        Task { @MainActor in
+            let uuid = await health.saveWater(ml: ml)
+            if e.isDeleted || e.modelContext == nil {
+                // Eintrag wurde waehrend des HK-Writes geloescht (Undo-Rennen): Sample direkt entsorgen.
+                if let uuid { await health.deleteIntakeSample(uuid: uuid, kind: .water) }
+            } else {
+                e.healthKitUUID = uuid
+                try? context.save()
+            }
+        }
     }
 
     private func addDrink(_ d: DrinkPreset) {
@@ -379,12 +397,28 @@ struct FluidsView: View {
         if d.caffeineMg > 0 {
             let c = IntakeEntry(kind: .caffeine, amount: d.caffeineMg)
             context.insert(c); added.append(c)
-            Task { await health.saveCaffeine(mg: d.caffeineMg) }
+            Task { @MainActor in
+                let uuid = await health.saveCaffeine(mg: d.caffeineMg)
+                if c.isDeleted || c.modelContext == nil {
+                    if let uuid { await health.deleteIntakeSample(uuid: uuid, kind: .caffeine) }
+                } else {
+                    c.healthKitUUID = uuid
+                    try? context.save()
+                }
+            }
         }
         if d.waterMl > 0 {
             let w = IntakeEntry(kind: .water, amount: d.waterMl)
             context.insert(w); added.append(w)
-            Task { await health.saveWater(ml: d.waterMl) }
+            Task { @MainActor in
+                let uuid = await health.saveWater(ml: d.waterMl)
+                if w.isDeleted || w.modelContext == nil {
+                    if let uuid { await health.deleteIntakeSample(uuid: uuid, kind: .water) }
+                } else {
+                    w.healthKitUUID = uuid
+                    try? context.save()
+                }
+            }
         }
         try? context.save()
         now = Date()   // sofort aktualisieren, damit die neue Dosis als „aktiv" zählt
@@ -392,8 +426,14 @@ struct FluidsView: View {
     }
 
     private func delete(_ e: IntakeEntry) {
+        // HK-Referenz VOR dem SwiftData-Delete sichern; Bestandseinträge ohne UUID: nur SwiftData.
+        let hkUUID = e.healthKitUUID
+        let kind = e.kind
         context.delete(e)
         try? context.save()
+        if let hkUUID {
+            Task { await health.deleteIntakeSample(uuid: hkUUID, kind: kind) }
+        }
     }
 }
 

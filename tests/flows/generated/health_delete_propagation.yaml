@@ -1,0 +1,211 @@
+# HAND-WRITTEN (Issue #2 Verifikation), Konventionen wie generierte Flows.
+# Beweist die Loesch-Propagation App -> Apple Health (healthKitUUID auf IntakeEntry):
+# 1) App-Eintraege vorraeumen, 2) Health-Koffein leeren (Altlasten/Waisen),
+# 3) Espresso in der App loggen (schreibt HK-Sample), 4) Eintrag in der App loeschen,
+# 5) in Apple Health verifizieren, dass KEIN Koffein-Sample mehr existiert.
+# Navigation Apple Health exakt wie health_desync_v2.yaml (iOS-26-Pfad kalibriert 2026_06_06).
+appId: com.tobiaskoch.NutritionApp
+---
+- launchApp:
+    stopApp: true
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: "Trinken"
+    timeout: 30000
+- tapOn:
+    point: "198,822"
+- waitForAnimationToEnd
+# Pre-Clean: alle vorhandenen Eintraege loeschen (Generator-Regel 4/13).
+- scrollUntilVisible:
+    element:
+      id: "fluids.water.add250"
+    direction: UP
+- scrollUntilVisible:
+    element:
+      id: "fluids.entry.delete"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+- repeat:
+    times: 8
+    while:
+      visible:
+        id: "fluids.entry.delete"
+    commands:
+      - swipe:
+          direction: UP
+          duration: 300
+      - waitForAnimationToEnd
+      - tapOn:
+          id: "fluids.entry.delete"
+          index: 0
+      - waitForAnimationToEnd
+# Apple Health leeren: Altlasten und Waisen aus frueheren Laeufen entfernen,
+# damit die End-Assertion eindeutig ist. Alle Schritte optional (leerer Zustand moeglich).
+- launchApp:
+    appId: com.apple.Health
+    stopApp: true
+- waitForAnimationToEnd
+- repeat:
+    times: 6
+    while:
+      notVisible: "Summary"
+    commands:
+      - tapOn:
+          text: "Continue"
+          optional: true
+      - tapOn:
+          text: "Next"
+          optional: true
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      - tapOn:
+          text: "Done"
+          optional: true
+      - waitForAnimationToEnd
+- tapOn:
+    point: "69,824"
+- waitForAnimationToEnd
+- tapOn:
+    point: "69,824"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: "Show All Health Data"
+    direction: DOWN
+- tapOn: "Show All Health Data"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: "Caffeine"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+- runFlow:
+    when:
+      visible: "Caffeine"
+    commands:
+      - tapOn: "Caffeine"
+      - waitForAnimationToEnd
+      - scrollUntilVisible:
+          element:
+            text: "Show All Data"
+          direction: DOWN
+          timeout: 10000
+          optional: true
+      - tapOn:
+          text: "Show All Data"
+          optional: true
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "Edit"
+          optional: true
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "Delete All"
+          optional: true
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "Delete All"
+          optional: true
+      - tapOn:
+          text: "Delete"
+          optional: true
+      - waitForAnimationToEnd
+      - waitForAnimationToEnd
+# Espresso in der App loggen (schreibt SwiftData-Eintrag + HK-Sample + merkt healthKitUUID).
+- launchApp:
+    stopApp: true
+- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: "Trinken"
+    timeout: 30000
+- tapOn:
+    point: "198,822"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "fluids.drink.Espresso"
+    direction: UP
+- tapOn:
+    id: "fluids.drink.Espresso"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "fluids.entry.caffeine"
+    direction: DOWN
+- assertVisible:
+    id: "fluids.entry.caffeine"
+# Dem asynchronen HK-Write Zeit geben, bevor geloescht wird (UUID muss gespeichert sein).
+- waitForAnimationToEnd
+- swipe:
+    direction: DOWN
+    duration: 500
+- waitForAnimationToEnd
+- swipe:
+    direction: UP
+    duration: 500
+- waitForAnimationToEnd
+# Eintrag IN DER APP loeschen: das ist der Moment, der das HK-Sample mitloeschen MUSS.
+- scrollUntilVisible:
+    element:
+      id: "fluids.entry.delete"
+    direction: DOWN
+- repeat:
+    times: 4
+    while:
+      visible:
+        id: "fluids.entry.delete"
+    commands:
+      - swipe:
+          direction: UP
+          duration: 300
+      - waitForAnimationToEnd
+      - tapOn:
+          id: "fluids.entry.delete"
+          index: 0
+      - waitForAnimationToEnd
+# Verifikation in Apple Health: kein Koffein-Sample mehr vorhanden.
+- launchApp:
+    appId: com.apple.Health
+    stopApp: true
+- waitForAnimationToEnd
+- tapOn:
+    point: "69,824"
+- waitForAnimationToEnd
+- tapOn:
+    point: "69,824"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: "Show All Health Data"
+    direction: DOWN
+- tapOn: "Show All Health Data"
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: "Caffeine"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+# Fall A: Caffeine-Typ noch gelistet -> Datenliste MUSS leer sein ("No Data").
+- runFlow:
+    when:
+      visible: "Caffeine"
+    commands:
+      - tapOn: "Caffeine"
+      - waitForAnimationToEnd
+      - scrollUntilVisible:
+          element:
+            text: "Show All Data"
+          direction: DOWN
+          timeout: 10000
+          optional: true
+      - tapOn:
+          text: "Show All Data"
+          optional: true
+      - waitForAnimationToEnd
+      - assertVisible: "No Data"
+# Fall B: Caffeine-Typ gar nicht mehr gelistet -> es existieren keine Samples; Beweis erbracht.
+# App-Zustand am Ende: keine Eintraege (im Test geloescht), Health: keine Koffein-Samples.
