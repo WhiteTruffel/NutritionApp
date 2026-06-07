@@ -137,22 +137,50 @@ actor NutritionHealthStore {
     }
 
     func saveWeight(kg: Double, date: Date = .now) async {
-        await saveQuantity(.bodyMass, value: kg, unit: .gramUnit(with: .kilo), date: date)
+        _ = await saveQuantity(.bodyMass, value: kg, unit: .gramUnit(with: .kilo), date: date)
     }
-    func saveWater(ml: Double, date: Date = .now) async {
+    /// Speichert Wasser und liefert die UUID des HK-Samples (für spätere Lösch-Propagation, Issue #2).
+    @discardableResult
+    func saveWater(ml: Double, date: Date = .now) async -> UUID? {
         await saveQuantity(.dietaryWater, value: ml, unit: .literUnit(with: .milli), date: date)
     }
-    func saveCaffeine(mg: Double, date: Date = .now) async {
+    /// Speichert Koffein und liefert die UUID des HK-Samples (für spätere Lösch-Propagation, Issue #2).
+    @discardableResult
+    func saveCaffeine(mg: Double, date: Date = .now) async -> UUID? {
         await saveQuantity(.dietaryCaffeine, value: mg, unit: .gramUnit(with: .milli), date: date)
     }
 
-    private func saveQuantity(_ id: HKQuantityTypeIdentifier, value: Double, unit: HKUnit, date: Date) async {
+    private func saveQuantity(_ id: HKQuantityTypeIdentifier, value: Double, unit: HKUnit, date: Date) async -> UUID? {
         guard HKHealthStore.isHealthDataAvailable(),
-              let type = HKQuantityType.quantityType(forIdentifier: id) else { return }
+              let type = HKQuantityType.quantityType(forIdentifier: id) else { return nil }
         let sample = HKQuantitySample(type: type,
                                       quantity: HKQuantity(unit: unit, doubleValue: value),
                                       start: date, end: date)
-        try? await store.save(sample)
+        do {
+            try await store.save(sample)
+            return sample.uuid
+        } catch {
+            return nil
+        }
+    }
+
+    /// Löscht das eigene Wasser-/Koffein-Sample zu einer beim Schreiben gemerkten UUID (Issue #2).
+    /// Einträge ohne UUID (Bestandsdaten) rufen das nie auf; nicht (mehr) vorhandene Samples sind ein No-op.
+    /// HealthKit erlaubt ohnehin nur das Löschen App-eigener Samples.
+    func deleteIntakeSample(uuid: UUID, kind: IntakeKind) async {
+        let id: HKQuantityTypeIdentifier = (kind == .water) ? .dietaryWater : .dietaryCaffeine
+        guard HKHealthStore.isHealthDataAvailable(),
+              let type = HKQuantityType.quantityType(forIdentifier: id) else { return }
+        let predicate = HKQuery.predicateForObject(with: uuid)
+        let samples: [HKSample] = await withCheckedContinuation { (cont: CheckedContinuation<[HKSample], Never>) in
+            let q = HKSampleQuery(sampleType: type, predicate: predicate,
+                                  limit: 1, sortDescriptors: nil) { _, results, _ in
+                cont.resume(returning: results ?? [])
+            }
+            store.execute(q)
+        }
+        guard !samples.isEmpty else { return }
+        try? await store.delete(samples)
     }
 
     // MARK: Workouts lesen (Training-Reiter)

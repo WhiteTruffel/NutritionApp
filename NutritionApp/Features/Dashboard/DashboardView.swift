@@ -106,12 +106,20 @@ struct DashboardView: View {
     }
 
     private func addIntake(_ kind: IntakeKind, _ amount: Double) {
-        context.insert(IntakeEntry(kind: kind, amount: amount))
+        let e = IntakeEntry(kind: kind, amount: amount)
+        context.insert(e)
         try? context.save()
-        Task {
+        Task { @MainActor in
+            let uuid: UUID?
             switch kind {
-            case .water:    await health.saveWater(ml: amount)
-            case .caffeine: await health.saveCaffeine(mg: amount)
+            case .water:    uuid = await health.saveWater(ml: amount)
+            case .caffeine: uuid = await health.saveCaffeine(mg: amount)
+            }
+            if e.isDeleted || e.modelContext == nil {
+                if let uuid { await health.deleteIntakeSample(uuid: uuid, kind: kind) }
+            } else {
+                e.healthKitUUID = uuid
+                try? context.save()
             }
         }
     }
