@@ -76,10 +76,9 @@ actor NutritionHealthStore {
             let q = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate,
                                       options: [.cumulativeSum, .separateBySource]) { _, stats, _ in
                 guard let stats else { cont.resume(returning: 0); return }
-                let perSource = (stats.sources ?? []).compactMap {
-                    stats.sumQuantity(for: $0)?.doubleValue(for: .count())
-                }
-                cont.resume(returning: perSource.max() ?? stats.sumQuantity()?.doubleValue(for: .count()) ?? 0)
+                let v = Self.bestSourceSteps(stats, unit: .count())
+                    ?? stats.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                cont.resume(returning: v)
             }
             store.execute(q)
         }
@@ -267,6 +266,18 @@ actor NutritionHealthStore {
 
     // MARK: Tagesreihen für Trends (generisch)
 
+    /// „Beste" Schrittzahl aus den Quellen-Statistiken: bevorzugt **Apple-eigene Quellen**
+    /// (iPhone/Watch, Bundle „com.apple…") und nimmt davon die höchste (sie überlappen →
+    /// ≈ echter Wert). Dritt-Apps, die oft den Tag aufsummieren/überzählen, werden so
+    /// ausgeschlossen – analog zur Quellen-Priorisierung der Health-App.
+    private static func bestSourceSteps(_ stats: HKStatistics, unit: HKUnit) -> Double? {
+        let sources = stats.sources ?? []
+        let apple = sources.filter { $0.bundleIdentifier.hasPrefix("com.apple") }
+        let pick = apple.isEmpty ? sources : apple
+        let vals = pick.compactMap { stats.sumQuantity(for: $0)?.doubleValue(for: unit) }
+        return vals.max()
+    }
+
     /// Passende Einheit je Kennung (HKUnit ist nicht Sendable → intern ableiten, nicht übergeben).
     private static func unit(for id: HKQuantityTypeIdentifier) -> HKUnit {
         switch id {
@@ -304,8 +315,7 @@ actor NutritionHealthStore {
                 collection?.enumerateStatistics(from: start, to: .now) { s, _ in
                     let v: Double?
                     if isSteps {
-                        let perSource = (s.sources ?? []).compactMap { s.sumQuantity(for: $0)?.doubleValue(for: unit) }
-                        v = perSource.max() ?? s.sumQuantity()?.doubleValue(for: unit)
+                        v = Self.bestSourceSteps(s, unit: unit) ?? s.sumQuantity()?.doubleValue(for: unit)
                     } else {
                         v = ((stat == .sum) ? s.sumQuantity() : s.averageQuantity())?.doubleValue(for: unit)
                     }
