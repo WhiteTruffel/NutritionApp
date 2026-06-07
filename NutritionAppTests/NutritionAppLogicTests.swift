@@ -94,7 +94,7 @@ final class NutritionAppLogicTests: XCTestCase {
 
     @MainActor
     func testPortionUndTagessummen() throws {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let config = ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
         let container = try ModelContainer(for: FoodItem.self, FoodEntry.self, configurations: config)
         let ctx = container.mainContext
 
