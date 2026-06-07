@@ -118,8 +118,11 @@ struct OverviewView: View {
     private var quickActions: some View {
         HStack(spacing: 10) {
             actionButton("plus.circle.fill", "Essen") { showAddFood = true }
+                .accessibilityIdentifier("overview.quick.essen")
             actionButton("drop.fill", "Wasser") { addIntake(.water, 250) }
+                .accessibilityIdentifier("overview.quick.wasser")
             actionButton("cup.and.saucer.fill", "Kaffee") { addIntake(.caffeine, 95); addIntake(.water, 200) }
+                .accessibilityIdentifier("overview.quick.kaffee")
         }
     }
     private func actionButton(_ icon: String, _ label: String, _ action: @escaping () -> Void) -> some View {

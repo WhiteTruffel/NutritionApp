@@ -384,7 +384,9 @@ private struct IntakeCard: View {
                 .frame(height: 8)
                 HStack(spacing: 10) {
                     Button("+250 ml") { onAdd(.water, 250) }
+                        .accessibilityIdentifier("dashboard.addWasser250")
                     Button("+500 ml") { onAdd(.water, 500) }
+                        .accessibilityIdentifier("dashboard.addWasser500")
                 }
                 .buttonStyle(.bordered)
                 .font(.footnote)
@@ -400,6 +402,7 @@ private struct IntakeCard: View {
                 Button("+ Kaffee") { onAdd(.caffeine, 95) }
                     .buttonStyle(.bordered)
                     .font(.footnote)
+                    .accessibilityIdentifier("dashboard.addKaffee")
             }
         }
         .padding(20)

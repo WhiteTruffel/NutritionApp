@@ -17,19 +17,19 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             OverviewView()
-                .tabItem { Label("Heute", systemImage: "flame.fill") }
+                .tabItem { Label("Heute", systemImage: "flame.fill").accessibilityIdentifier("tab.heute") }
 
             DiaryView()
-                .tabItem { Label("Tagebuch", systemImage: "book.fill") }
+                .tabItem { Label("Tagebuch", systemImage: "book.fill").accessibilityIdentifier("tab.tagebuch") }
 
             FluidsView()
-                .tabItem { Label("Trinken", systemImage: "drop.fill") }
+                .tabItem { Label("Trinken", systemImage: "drop.fill").accessibilityIdentifier("tab.trinken") }
 
             NutrientsView()
-                .tabItem { Label("Nährstoffe", systemImage: "leaf.fill") }
+                .tabItem { Label("Nährstoffe", systemImage: "leaf.fill").accessibilityIdentifier("tab.naehrstoffe") }
 
             BodyView()
-                .tabItem { Label("Körper", systemImage: "figure.run") }
+                .tabItem { Label("Körper", systemImage: "figure.run").accessibilityIdentifier("tab.koerper") }
         }
         .sheet(isPresented: $showWhatsNew) { WhatsNewView() }
         .fullScreenCover(isPresented: $showOnboarding) {

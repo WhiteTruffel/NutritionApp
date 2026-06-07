@@ -1,0 +1,57 @@
+# Probe v2: iOS 26 Health hat KEINEN Browse-Tab (nur Summary, Sharing, Suche).
+# Pfad: Summary -> Show All Health Data -> Caffeine -> Show All Data -> Delete-UI.
+appId: com.apple.Health
+---
+- launchApp:
+    appId: com.apple.Health
+    stopApp: true
+- waitForAnimationToEnd
+- repeat:
+    times: 6
+    while:
+      notVisible: "Summary"
+    commands:
+      - tapOn:
+          text: "Continue"
+          optional: true
+      - tapOn:
+          text: "Next"
+          optional: true
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      - tapOn:
+          text: "Done"
+          optional: true
+      - waitForAnimationToEnd
+- takeScreenshot: probe_health_10_summary
+- scrollUntilVisible:
+    element:
+      text: "Show All Health Data"
+    direction: DOWN
+- tapOn: "Show All Health Data"
+- waitForAnimationToEnd
+- takeScreenshot: probe_health_11_all_data
+- scrollUntilVisible:
+    element:
+      text: "Caffeine"
+    direction: DOWN
+- tapOn: "Caffeine"
+- waitForAnimationToEnd
+- takeScreenshot: probe_health_12_caffeine
+- scrollUntilVisible:
+    element:
+      text: "Show All Data"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+- tapOn:
+    text: "Show All Data"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: probe_health_13_data_list
+- swipe:
+    start: "90%,30%"
+    end: "30%,30%"
+- waitForAnimationToEnd
+- takeScreenshot: probe_health_14_after_swipe
