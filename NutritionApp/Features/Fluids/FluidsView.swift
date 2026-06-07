@@ -53,6 +53,7 @@ struct FluidsView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     hydrationCard
+                    WeeklyHydrationRingsView()
                     caffeineStatusCard
                     if !caffeineDoses.isEmpty { caffeineChartCard }
                     drinkGridCard

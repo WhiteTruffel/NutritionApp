@@ -1,16 +1,17 @@
 import SwiftUI
 import SwiftData
 
-/// App-Einstieg: zwei Tabs im MyFitnessPal-Muster – Dashboard („Heute") und Tagebuch.
-/// HealthKit-Autorisierung wird hier einmal zentral angefragt.
+/// App-Einstieg: fünf Tabs (Heute, Tagebuch, Trinken, Nährstoffe, Körper).
+/// HealthKit-Autorisierung, Localization, Reminders, Test-Data-Seeding zentral.
 struct RootTabView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Query private var profiles: [UserProfile]
     private let health = NutritionHealthStore()
+    @ObservedObject private var locManager = LocalizationManager.shared
 
     @AppStorage("lastSeenVersion") private var lastSeenVersion = ""
-    @AppStorage("didOnboard") private var didOnboard = false
+    @AppStorage("onboardingCompleted") private var onboardingCompleted = false
     @State private var showWhatsNew = false
     @State private var showOnboarding = false
 
@@ -33,27 +34,42 @@ struct RootTabView: View {
         }
         .sheet(isPresented: $showWhatsNew) { WhatsNewView() }
         .fullScreenCover(isPresented: $showOnboarding) {
-            OnboardingView { didOnboard = true; showOnboarding = false }
+            NewOnboardingView {
+                onboardingCompleted = true
+                showOnboarding = false
+            }
         }
         .task {
-            // Erststart: Onboarding zeigen (vor „Neu in dieser Version").
-            if !didOnboard {
+            // Erststart: Neues Onboarding zeigen (nicht übersprungbar).
+            if !onboardingCompleted {
                 showOnboarding = true
-                lastSeenVersion = Theme.appVersion   // „What's New" beim Erststart unterdrücken
+                lastSeenVersion = Theme.appVersion
             } else if lastSeenVersion != Theme.appVersion {
-                // „Neu in dieser Version" einmalig nach einem Update zeigen.
                 showWhatsNew = true
                 lastSeenVersion = Theme.appVersion
             }
-            // Standard-Profil anlegen, falls noch keins existiert (liefert sofort sinnvolle Ziele).
+
+            // Standard-Profil anlegen, falls noch keins existiert.
             if profiles.isEmpty {
                 context.insert(UserProfile())
                 try? context.save()
             }
+
+            // Test-Daten seeden (12 Wochen Hydration-History).
+            TestDataSeeding.seedHydrationHistory(in: context)
+
+            // Reminders einrichten.
+            let authorized = await RemindersManager.shared.requestAuthorization()
+            if authorized {
+                let settings = RemindersSettings()
+                RemindersManager.shared.scheduleReminders(settings: settings)
+            }
+
+            // HealthKit-Autorisierung.
             try? await health.requestAuthorization()
             let coordinator = HealthSyncCoordinator(health: health, container: context.container)
-            await coordinator.sync()              // Import beim Start (Deltas seit letztem Mal)
-            await coordinator.startBackgroundSync() // Observer + Background Delivery (Gerät + Capability)
+            await coordinator.sync()
+            await coordinator.startBackgroundSync()
         }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }

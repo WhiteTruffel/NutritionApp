@@ -6,6 +6,7 @@ import SwiftUI
 struct BodyView: View {
     enum Segment: String, CaseIterable, Identifiable {
         case erholung = "Erholung"
+        case hrv = "HRV"
         case gewicht = "Gewicht"
         var id: String { rawValue }
     }
@@ -17,6 +18,7 @@ struct BodyView: View {
             Group {
                 switch segment {
                 case .erholung: RecoveryDetailView()
+                case .hrv:      HRVMeasurementView()
                 case .gewicht:  WeightProgressView()
                 }
             }
