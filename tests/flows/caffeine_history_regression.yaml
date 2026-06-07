@@ -1,0 +1,111 @@
+# Regression: Koffein loggen -> Historie oeffnen -> loeschen -> Historie erneut -> kein Crash.
+# V1 des Desync-Tests (App-seitig). V2 ergaenzt spaeter die Loeschung in Apple Health.
+appId: com.tobiaskoch.NutritionApp
+---
+# KEIN clearState mehr. Befund 2026_06_06 (Screenshot debug_184824): clearState
+# deinstalliert die App, das setzt die Health-Berechtigung zurueck, und das System-
+# Health-Sheet laesst sich von Maestro-Taps NICHT zuverlaessig bedienen ("Turn On All"
+# 3x getappt, Toggles blieben aus, "Allow" blieb grau). Loesung: Berechtigung wird
+# EINMAL manuell im Simulator erteilt und persistiert; der Flow raeumt stattdessen
+# selbst auf (Pre-Clean unten). Fuer frische CI-Simulatoren braucht es spaeter einen
+# einmaligen Seed-Schritt; geparkt in memory/projects/nutrition-app-testing.md.
+- launchApp
+- waitForAnimationToEnd
+# Sicherheitsnetz: falls das Sheet doch erscheint, kurz versuchen; sonst weiter.
+- extendedWaitUntil:
+    visible: "Health Access"
+    timeout: 5000
+    optional: true
+- repeat:
+    times: 2
+    while:
+      visible: "Health Access"
+    commands:
+      - tapOn: "Turn On All"
+      - waitForAnimationToEnd
+      - tapOn: "Allow"
+      - waitForAnimationToEnd
+- tapOn:
+    text: "Überspringen"
+    optional: true
+- extendedWaitUntil:
+    visible: "Trinken"
+    timeout: 30000
+- tapOn: "Trinken"
+- assertVisible:
+    id: "screen.fluids"
+# PRE-CLEAN: Reste aus frueheren Laeufen loeschen (ersetzt clearState).
+# Ein einzelner scroll reichte nicht (Befund 2026_06_06, Lauf 194626: 4 Alt-Eintraege
+# ueberlebten den Pre-Clean). Jetzt: bis zu den Eintraegen scrollen, falls vorhanden.
+- scrollUntilVisible:
+    element:
+      id: "fluids.entry.delete"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+- repeat:
+    times: 8
+    while:
+      visible:
+        id: "fluids.entry.delete"
+    commands:
+      - tapOn:
+          id: "fluids.entry.delete"
+          index: 0
+      - waitForAnimationToEnd
+# Zurueck nach oben zu den Quick-Add-Buttons.
+- scrollUntilVisible:
+    element:
+      id: "fluids.drink.Espresso"
+    direction: UP
+# Espresso loggen (63 mg Koffein + 30 ml Wasser, erzeugt also ZWEI Eintraege).
+- tapOn:
+    id: "fluids.drink.Espresso"
+- waitForAnimationToEnd
+# Die Tagesliste liegt unter dem Fold: hinscrollen.
+- scrollUntilVisible:
+    element:
+      id: "fluids.entry.caffeine"
+    direction: DOWN
+- assertVisible:
+    id: "fluids.entry.caffeine"
+# Hoch zur Koffein-Karte und Historie oeffnen (der urspruengliche Crash-Pfad).
+- scrollUntilVisible:
+    element:
+      id: "fluids.caffeineHistory.open"
+    direction: UP
+- tapOn:
+    id: "fluids.caffeineHistory.open"
+- assertVisible: "Koffein im K.*rper"
+# Zurueck (Nav-Back traegt den Titel des vorherigen Screens).
+- tapOn: "Trinken"
+- assertVisible:
+    id: "screen.fluids"
+# Beide Eintraege in der App loeschen (Wasser + Koffein; Reihenfolge unbestimmt).
+- scrollUntilVisible:
+    element:
+      id: "fluids.entry.delete"
+    direction: DOWN
+- tapOn:
+    id: "fluids.entry.delete"
+    index: 0
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible:
+        id: "fluids.entry.delete"
+    commands:
+      - tapOn:
+          id: "fluids.entry.delete"
+          index: 0
+- waitForAnimationToEnd
+- assertNotVisible:
+    id: "fluids.entry.caffeine"
+# Historie nach Loeschung erneut: darf nicht crashen (heute bleibt die HK-Waise, Issue #2).
+- scrollUntilVisible:
+    element:
+      id: "fluids.caffeineHistory.open"
+    direction: UP
+- tapOn:
+    id: "fluids.caffeineHistory.open"
+- assertVisible: "Koffein im K.*rper"

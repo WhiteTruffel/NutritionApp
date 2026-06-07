@@ -222,9 +222,9 @@ struct FluidsView: View {
                 RuleMark(x: .value("Jetzt", now))
                     .foregroundStyle(.secondary.opacity(0.4))
                     .lineStyle(StrokeStyle(lineWidth: 1))
-                ForEach(caffeineDoses.indices, id: \.self) { i in
-                    PointMark(x: .value("Zeit", caffeineDoses[i].date),
-                              y: .value("mg", CaffeineKinetics.active(at: caffeineDoses[i].date, doses: caffeineDoses)))
+                ForEach(caffeineDoses, id: \.date) { dose in
+                    PointMark(x: .value("Zeit", dose.date),
+                              y: .value("mg", CaffeineKinetics.active(at: dose.date, doses: caffeineDoses)))
                         .foregroundStyle(.brown)
                         .symbolSize(40)
                 }
