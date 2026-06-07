@@ -64,15 +64,22 @@ actor NutritionHealthStore {
 
     // MARK: Schreiben von Gewicht / Wasser / Koffein
 
-    /// Heutige Schrittzahl (kumulative Summe seit Tagesbeginn). BL5.
+    /// Heutige Schrittzahl seit Tagesbeginn. BL5.
+    /// WICHTIG: NICHT alle Quellen summieren – iPhone, Apple Watch und Dritt-Apps schreiben je
+    /// eigene Schritt-Samples; eine reine Summe verdoppelt/verdreifacht. Stattdessen `.separateBySource`
+    /// und die Quelle mit den meisten Schritten nehmen (≈ Anzeige der Health-App).
     func todaySteps() async -> Double {
         guard let type = HKQuantityType.quantityType(forIdentifier: .stepCount) else { return 0 }
         let start = Calendar.current.startOfDay(for: .now)
         let predicate = HKQuery.predicateForSamples(withStart: start, end: .now)
-        return await withCheckedContinuation { cont in
+        return await withCheckedContinuation { (cont: CheckedContinuation<Double, Never>) in
             let q = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate,
-                                      options: .cumulativeSum) { _, stats, _ in
-                cont.resume(returning: stats?.sumQuantity()?.doubleValue(for: .count()) ?? 0)
+                                      options: [.cumulativeSum, .separateBySource]) { _, stats, _ in
+                guard let stats else { cont.resume(returning: 0); return }
+                let perSource = (stats.sources ?? []).compactMap {
+                    stats.sumQuantity(for: $0)?.doubleValue(for: .count())
+                }
+                cont.resume(returning: perSource.max() ?? stats.sumQuantity()?.doubleValue(for: .count()) ?? 0)
             }
             store.execute(q)
         }
@@ -284,7 +291,10 @@ actor NutritionHealthStore {
         let anchor = cal.startOfDay(for: .now)
         guard let start = cal.date(byAdding: .day, value: -(days - 1), to: anchor) else { return [] }
         let predicate = HKQuery.predicateForSamples(withStart: start, end: .now)
-        let options: HKStatisticsOptions = (stat == .sum) ? .cumulativeSum : .discreteAverage
+        // Schritte über Quellen NICHT summieren (Doppelzählung iPhone/Watch/Dritt-Apps) → stärkste Quelle.
+        let isSteps = (id == .stepCount)
+        let options: HKStatisticsOptions = isSteps ? [.cumulativeSum, .separateBySource]
+                                                   : ((stat == .sum) ? .cumulativeSum : .discreteAverage)
         return await withCheckedContinuation { (cont: CheckedContinuation<[DayValue], Never>) in
             let q = HKStatisticsCollectionQuery(quantityType: type, quantitySamplePredicate: predicate,
                                                 options: options, anchorDate: anchor,
@@ -292,8 +302,14 @@ actor NutritionHealthStore {
             q.initialResultsHandler = { _, collection, _ in
                 var out: [DayValue] = []
                 collection?.enumerateStatistics(from: start, to: .now) { s, _ in
-                    let qty = (stat == .sum) ? s.sumQuantity() : s.averageQuantity()
-                    if let v = qty?.doubleValue(for: unit) { out.append(DayValue(date: s.startDate, value: v)) }
+                    let v: Double?
+                    if isSteps {
+                        let perSource = (s.sources ?? []).compactMap { s.sumQuantity(for: $0)?.doubleValue(for: unit) }
+                        v = perSource.max() ?? s.sumQuantity()?.doubleValue(for: unit)
+                    } else {
+                        v = ((stat == .sum) ? s.sumQuantity() : s.averageQuantity())?.doubleValue(for: unit)
+                    }
+                    if let v { out.append(DayValue(date: s.startDate, value: v)) }
                 }
                 cont.resume(returning: out)
             }
