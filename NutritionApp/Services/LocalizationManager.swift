@@ -1,0 +1,54 @@
+import Foundation
+import SwiftUI
+
+@Observable
+final class LocalizationManager {
+    static let shared = LocalizationManager()
+
+    var currentLanguage: AppLanguage {
+        didSet { saveLanguage() }
+    }
+    var currentRegion: AppRegion {
+        didSet { saveRegion() }
+    }
+
+    private let languageKey = "appLanguage"
+    private let regionKey = "appRegion"
+
+    init() {
+        if let saved = UserDefaults.standard.string(forKey: languageKey),
+           let language = AppLanguage(rawValue: saved) {
+            self.currentLanguage = language
+        } else {
+            self.currentLanguage = .german // Default
+        }
+
+        if let saved = UserDefaults.standard.string(forKey: regionKey),
+           let region = AppRegion(rawValue: saved) {
+            self.currentRegion = region
+        } else {
+            self.currentRegion = .germany // Default
+        }
+    }
+
+    func string(_ key: String) -> String {
+        let bundle = Bundle.main
+        let path = bundle.path(forResource: currentLanguage.languageCode, ofType: "lproj") ?? bundle.path(forResource: "en", ofType: "lproj")!
+        let langBundle = Bundle(path: path)!
+        return NSLocalizedString(key, bundle: langBundle, comment: "")
+    }
+
+    private func saveLanguage() {
+        UserDefaults.standard.set(currentLanguage.rawValue, forKey: languageKey)
+    }
+
+    private func saveRegion() {
+        UserDefaults.standard.set(currentRegion.rawValue, forKey: regionKey)
+    }
+}
+
+extension String {
+    func localized() -> String {
+        LocalizationManager.shared.string(self)
+    }
+}
