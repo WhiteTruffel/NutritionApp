@@ -28,9 +28,9 @@ final class TestDataSeeding {
                 for _ in 0..<numEntries {
                     let entryAmount = randomIntake / Double(numEntries)
                     let entry = IntakeEntry(
+                        date: date.addingTimeInterval(TimeInterval.random(in: 0...86400)),
                         kind: .water,
-                        amountMl: entryAmount,
-                        timestamp: date.addingTimeInterval(TimeInterval.random(in: 0...86400))
+                        amount: entryAmount
                     )
                     modelContext.insert(entry)
                 }
@@ -43,16 +43,5 @@ final class TestDataSeeding {
     static func seedWithContrastingData(in modelContext: ModelContext) {
         // Alternative test set: all settings opposite (US, English, Imperial, Female, etc.)
         // Can be used for comprehensive testing
-    }
-}
-
-// MARK: - IntakeEntry Extension for testing
-
-extension IntakeEntry {
-    convenience init(kind: Kind, amountMl: Double, timestamp: Date) {
-        self.init()
-        self.kind = kind
-        self.amountMl = amountMl
-        self.timestamp = timestamp
     }
 }

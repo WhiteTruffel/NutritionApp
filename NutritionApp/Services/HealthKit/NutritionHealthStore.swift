@@ -150,6 +150,11 @@ actor NutritionHealthStore {
         await saveQuantity(.dietaryCaffeine, value: mg, unit: .gramUnit(with: .milli), date: date)
     }
 
+    /// Saves HRV measurement to HealthKit (in milliseconds).
+    func saveHRVSample(hrv: Double, date: Date = .now) async -> UUID? {
+        await saveQuantity(.heartRateVariabilitySDNN, value: hrv, unit: HKUnit.secondUnit(with: .milli), date: date)
+    }
+
     private func saveQuantity(_ id: HKQuantityTypeIdentifier, value: Double, unit: HKUnit, date: Date) async -> UUID? {
         guard HKHealthStore.isHealthDataAvailable(),
               let type = HKQuantityType.quantityType(forIdentifier: id) else { return nil }

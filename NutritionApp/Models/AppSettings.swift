@@ -34,10 +34,10 @@ enum AppRegion: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    var firstDayOfWeek: Calendar.Component { // Monday vs Sunday
+    var firstDayOfWeek: Int { // 1=Sunday, 2=Monday
         switch self {
-        case .usa, .canada, .australia, .india: return .sunday
-        default: return .monday
+        case .usa, .canada, .australia, .india: return 1 // Sunday
+        default: return 2 // Monday
         }
     }
 
@@ -189,14 +189,6 @@ final class RemindersSettings: Codable {
     var bedtimeReminderEnabled: Bool = true
     var bedtimeReminderTime: Date = Date(timeIntervalSince1970: 22 * 3600) // 10:00 PM (user-configured)
     var bedtimeBefore: Int = 60 // minutes before bedtime to remind
-
-    enum CodingKeys: String, CodingKey {
-        case morningMotivationEnabled, morningMotivationTime
-        case breakfastReminderEnabled, breakfastReminderTime
-        case lunchReminderEnabled, lunchReminderTime
-        case dinnerReminderEnabled, dinnerReminderTime
-        case bedtimeReminderEnabled, bedtimeReminderTime, bedtimeBefore
-    }
 }
 
 // MARK: - App Settings (Persisted)
@@ -210,8 +202,4 @@ final class AppSettingsState: Codable {
     var gender: Gender = .male
     var onboardingCompleted: Bool = false
     var reminders: RemindersSettings = RemindersSettings()
-
-    enum CodingKeys: String, CodingKey {
-        case region, language, unitSystem, skinType, gender, onboardingCompleted, reminders
-    }
 }

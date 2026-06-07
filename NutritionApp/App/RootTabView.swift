@@ -8,7 +8,7 @@ struct RootTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Query private var profiles: [UserProfile]
     private let health = NutritionHealthStore()
-    @ObservedObject private var locManager = LocalizationManager.shared
+    @State private var locManager = LocalizationManager.shared
 
     @AppStorage("lastSeenVersion") private var lastSeenVersion = ""
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false

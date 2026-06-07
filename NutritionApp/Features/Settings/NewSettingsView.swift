@@ -5,19 +5,24 @@ struct NewSettingsView: View {
     @State private var showRemindersSheet = false
     @State private var showRecommendSheet = false
     @State private var reminders = RemindersSettings()
-    let locManager = LocalizationManager.shared
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Region & Language") {
-                    Picker("Region", selection: $locManager.currentRegion) {
+                    Picker("Region", selection: Binding(
+                        get: { LocalizationManager.shared.currentRegion },
+                        set: { LocalizationManager.shared.currentRegion = $0 }
+                    )) {
                         ForEach(AppRegion.allCases) { region in
                             Text(region.displayName).tag(region)
                         }
                     }
 
-                    Picker("Language", selection: $locManager.currentLanguage) {
+                    Picker("Language", selection: Binding(
+                        get: { LocalizationManager.shared.currentLanguage },
+                        set: { LocalizationManager.shared.currentLanguage = $0 }
+                    )) {
                         ForEach(AppLanguage.allCases) { lang in
                             Text(lang.displayName).tag(lang)
                         }
@@ -25,7 +30,10 @@ struct NewSettingsView: View {
                 }
 
                 Section("Units") {
-                    Picker("System", selection: $locManager.currentRegion) {
+                    Picker("System", selection: Binding(
+                        get: { LocalizationManager.shared.currentRegion },
+                        set: { LocalizationManager.shared.currentRegion = $0 }
+                    )) {
                         Text("Metric (ml, kg, cm)").tag(AppRegion.germany)
                         Text("Imperial (oz, lbs, in)").tag(AppRegion.usa)
                     }

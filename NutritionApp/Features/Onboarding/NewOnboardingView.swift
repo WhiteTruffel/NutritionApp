@@ -121,11 +121,14 @@ struct NewOnboardingView: View {
                     HStack {
                         Text("onboarding.height".localized()).fontWeight(.semibold)
                         Spacer()
-                        TextField("cm", text: $height)
-                            .keyboardType(.numberPad)
-                            .frame(width: 60)
-                            .textFieldStyle(.roundedBorder)
-                        + Text(selectedFormat == .metric ? "cm" : "in").font(.caption)
+                        HStack(spacing: 8) {
+                            TextField("cm", text: $height)
+                                .keyboardType(.numberPad)
+                                .frame(width: 60)
+                                .textFieldStyle(.roundedBorder)
+                            Text(selectedFormat == .metric ? "cm" : "in")
+                                .font(.caption)
+                        }
                     }
 
                     HStack {
