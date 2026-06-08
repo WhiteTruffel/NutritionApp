@@ -145,6 +145,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = E66813E52FCAF70D00DFAEA9;
 			minimizedProjectReferenceProxies = 1;
@@ -331,7 +332,7 @@
 				CODE_SIGN_ENTITLEMENTS = NutritionApp/NutritionApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 28;
-				DEVELOPMENT_TEAM = 4ZN52B75NP;
+				DEVELOPMENT_TEAM = 4B5PF838DP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -349,7 +350,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tobiaskoch.NutritionApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.markolukic.NutritionApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -369,7 +370,7 @@
 				CODE_SIGN_ENTITLEMENTS = NutritionApp/NutritionApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 28;
-				DEVELOPMENT_TEAM = 4ZN52B75NP;
+				DEVELOPMENT_TEAM = 4B5PF838DP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -387,7 +388,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tobiaskoch.NutritionApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.markolukic.NutritionApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -410,7 +411,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tobiaskoch.NutritionAppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.markolukic.NutritionAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -436,7 +437,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tobiaskoch.NutritionAppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.markolukic.NutritionAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
