@@ -7,7 +7,8 @@ struct NutritionApp: App {
 
     init() {
         let schema = Schema([FoodItem.self, FoodEntry.self, DailyGoal.self, UserProfile.self,
-                             WeightEntry.self, IntakeEntry.self, MealTemplate.self])
+                             WeightEntry.self, IntakeEntry.self, MealTemplate.self,
+                             HRVMeasurementRecord.self])
         // cloudKitDatabase: .none — die App hat zwar eine CloudKit-Berechtigung (für die zentrale
         // Food-DB via CloudFoodDatabase), aber der lokale SwiftData-Store soll NICHT automatisch
         // mit CloudKit spiegeln. Sonst scheitert der Container an @Attribute(.unique)-IDs.

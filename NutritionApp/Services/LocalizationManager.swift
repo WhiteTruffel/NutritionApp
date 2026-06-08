@@ -32,8 +32,16 @@ final class LocalizationManager {
     }
 
     func string(_ key: String) -> String {
+        string(key, language: currentLanguage)
+    }
+
+    /// Resolve a key in a specific language. Falls back to the English bundle when
+    /// the requested language has no `.lproj` (the same behaviour the app relies on
+    /// for languages without a translation file yet).
+    func string(_ key: String, language: AppLanguage) -> String {
         let bundle = Bundle.main
-        let path = bundle.path(forResource: currentLanguage.languageCode, ofType: "lproj") ?? bundle.path(forResource: "en", ofType: "lproj")!
+        let path = bundle.path(forResource: language.languageCode, ofType: "lproj")
+            ?? bundle.path(forResource: "en", ofType: "lproj")!
         let langBundle = Bundle(path: path)!
         return NSLocalizedString(key, bundle: langBundle, comment: "")
     }

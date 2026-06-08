@@ -54,3 +54,165 @@
 "settings.personal" = "Persönliche Info";
 "settings.reminders" = "Erinnerungen";
 "settings.recommend_app" = "App empfehlen";
+
+/* ===================== HRV-Modul ===================== */
+
+/* HRV Onboarding */
+"hrv.onboarding.what_is_hrv.title" = "Was ist HRV?";
+"hrv.onboarding.what_is_hrv.body" = "HRV bedeutet Herzratenvariabilität. Sie misst die kleinen Zeitunterschiede zwischen deinen Herzschlägen.";
+"hrv.onboarding.what_is_hrv.bullet_1" = "Dein Herz schlägt nicht wie ein perfektes Metronom.";
+"hrv.onboarding.what_is_hrv.bullet_2" = "Ein flexibler Rhythmus kann auf eine bessere Anpassungsfähigkeit deines Nervensystems hinweisen.";
+"hrv.onboarding.what_is_hrv.bullet_3" = "HRV kann durch Schlaf, Stress, Krankheit, Training, Alkohol, Koffein, Hydration und emotionale Belastung beeinflusst werden.";
+
+"hrv.onboarding.camera_scan.title" = "Wie die Messung mit dem Smartphone funktioniert";
+"hrv.onboarding.camera_scan.body" = "Die Kamera erkennt kleinste Farbveränderungen in deiner Fingerspitze. Diese Veränderungen folgen deiner Pulswelle, und die App schätzt daraus die Zeit zwischen den Herzschlägen.";
+"hrv.onboarding.camera_scan.bullet_1" = "Das ist eine kamerabasierte HRV-Schätzung.";
+"hrv.onboarding.camera_scan.bullet_2" = "Sie ist nützlich für Trends, wenn du sorgfältig misst.";
+"hrv.onboarding.camera_scan.bullet_3" = "Sie ist kein EKG und keine medizinische Diagnose.";
+
+"hrv.onboarding.best_time.title" = "Wann du messen solltest";
+"hrv.onboarding.best_time.body" = "Für den besten Trend misst du möglichst jeden Morgen zur gleichen Zeit, bevor Koffein, Essen, Training oder Arbeitsstress beginnen.";
+"hrv.onboarding.best_time.bullet_1" = "Miss nach dem Aufwachen.";
+"hrv.onboarding.best_time.bullet_2" = "Miss vor Koffein oder Essen.";
+"hrv.onboarding.best_time.bullet_3" = "Nutze jeden Tag die gleiche Körperposition.";
+"hrv.onboarding.best_time.bullet_4" = "Miss möglichst im gleichen morgendlichen Zeitfenster.";
+
+"hrv.onboarding.preparation.title" = "Bevor du startest";
+"hrv.onboarding.preparation.body" = "Ruhe ist wichtig. HRV ist empfindlich, deshalb entstehen die saubersten Messungen, wenn dein Körper ruhig ist und dein Finger stabil bleibt.";
+"hrv.onboarding.preparation.bullet_1" = "Setze oder lege dich hin.";
+"hrv.onboarding.preparation.bullet_2" = "Ruh dich ein bis zwei Minuten aus.";
+"hrv.onboarding.preparation.bullet_3" = "Wärme deine Hände, wenn deine Finger kalt sind.";
+"hrv.onboarding.preparation.bullet_4" = "Atme normal und sprich nicht während der Messung.";
+
+"hrv.onboarding.finger_placement.title" = "Lege deinen Finger sanft auf";
+"hrv.onboarding.finger_placement.body" = "Bedecke die Rückkamera vollständig mit deiner Fingerspitze. Nutze sanften, gleichmäßigen Druck. Wenn du zu stark drückst, verändert sich der Blutfluss und die Messung wird weniger zuverlässig.";
+"hrv.onboarding.finger_placement.bullet_1" = "Bedecke die Kamera vollständig.";
+"hrv.onboarding.finger_placement.bullet_2" = "Drücke nicht zu stark.";
+"hrv.onboarding.finger_placement.bullet_3" = "Halte den Finger still.";
+
+"hrv.onboarding.during_scan.title" = "Während der Messung";
+"hrv.onboarding.during_scan.body" = "Atme einfach normal. Versuche nicht, den Wert zu verbessern. Ziel ist es, deinen echten Zustand zu erfassen.";
+"hrv.onboarding.during_scan.bullet_1" = "Bleib still.";
+"hrv.onboarding.during_scan.bullet_2" = "Sprich nicht.";
+"hrv.onboarding.during_scan.bullet_3" = "Atme natürlich weiter.";
+
+"hrv.onboarding.scan_length.title" = "Wähle die Messtiefe";
+"hrv.onboarding.scan_length.body" = "Kurze Messungen sind nützlich für tägliche Trends. Längere Messungen schalten tiefere HRV-Metriken frei.";
+"hrv.onboarding.scan_length.bullet_1" = "Quick Scan: 60 bis 120 Sekunden für tägliche Bereitschaft.";
+"hrv.onboarding.scan_length.bullet_2" = "Standard Scan: 5 Minuten für tiefere Analyse.";
+"hrv.onboarding.scan_length.bullet_3" = "Deep Scan: 300 saubere Herzschläge oder länger für fortgeschrittene HRV-Metriken.";
+
+"hrv.onboarding.results.title" = "Wie du dein Ergebnis liest";
+"hrv.onboarding.results.body" = "Eine Messung ist eine Momentaufnahme. Dein persönlicher Trend ist wichtiger als ein einzelner Wert.";
+"hrv.onboarding.results.bullet_1" = "Deine persönliche Basislinie ist wichtiger als ein allgemeiner Normalbereich.";
+"hrv.onboarding.results.bullet_2" = "Niedrige HRV kann durch Stress, schlechten Schlaf, Krankheit, Dehydration, Alkohol oder hartes Training entstehen.";
+"hrv.onboarding.results.bullet_3" = "Hohe HRV kann gute Erholung bedeuten. Wenn du dich erschöpft fühlst, kann sie aber auch auf Erholungsbedarf hinweisen.";
+
+"hrv.onboarding.daily_guidance.title" = "Deine tägliche Orientierung";
+"hrv.onboarding.daily_guidance.body" = "Die App nutzt deinen HRV-Trend, um tägliche Erinnerungen persönlicher zu machen.";
+"hrv.onboarding.daily_guidance.bullet_1" = "Wenn du heute gemessen hast, können Erinnerungen HRV-basierte Hinweise enthalten.";
+"hrv.onboarding.daily_guidance.bullet_2" = "Wenn du noch nicht gemessen hast, erinnert dich die App sanft an eine Messung.";
+"hrv.onboarding.daily_guidance.bullet_3" = "Je regelmäßiger du misst, desto persönlicher wird deine Orientierung.";
+
+"hrv.onboarding.limitations.title" = "Wichtige Grenzen";
+"hrv.onboarding.limitations.body" = "HRV ist keine medizinische Diagnose. Diese App erkennt keine Herzerkrankungen, Rhythmusstörungen oder medizinischen Notfälle.";
+"hrv.onboarding.limitations.bullet_1" = "Kamera-HRV ist eine Schätzung, kein EKG.";
+"hrv.onboarding.limitations.bullet_2" = "Bewegung, kalte Finger, Druck, Medikamente und Rhythmusstörungen können die Genauigkeit beeinflussen.";
+"hrv.onboarding.limitations.bullet_3" = "Bei Brustschmerzen, Ohnmacht, starker Atemnot oder ungewöhnlichen Symptomen solltest du medizinische Hilfe suchen.";
+
+"hrv.onboarding.first_scan.title" = "Bereit für deine erste Messung?";
+"hrv.onboarding.first_scan.body" = "Mach jetzt deine erste ruhige Messung, damit die App deine persönliche HRV-Basislinie aufbauen kann.";
+"hrv.onboarding.first_scan.primary_cta" = "HRV-Messung starten";
+"hrv.onboarding.first_scan.secondary_cta" = "Später erinnern";
+
+/* HRV Signal-Rückmeldung */
+"hrv.scan.signal.good" = "Gutes Signal";
+"hrv.scan.signal.too_much_pressure" = "Zu viel Druck";
+"hrv.scan.signal.too_little_pressure" = "Zu wenig Druck";
+"hrv.scan.signal.finger_moved" = "Finger bewegt";
+"hrv.scan.signal.camera_not_covered" = "Kamera nicht bedeckt";
+"hrv.scan.signal.hold_still" = "Stillhalten";
+"hrv.scan.signal.breathe_normally" = "Normal atmen";
+"hrv.scan.signal.almost_done" = "Fast fertig";
+"hrv.scan.signal.complete" = "Messung abgeschlossen";
+
+/* HRV Qualität */
+"hrv.quality.excellent" = "Ausgezeichnet";
+"hrv.quality.good" = "Gut";
+"hrv.quality.usable" = "Brauchbar";
+"hrv.quality.weak" = "Schwach";
+"hrv.quality.invalid" = "Ungültig";
+"hrv.quality.message.rejected" = "Die Messung hatte zu viele Artefakte oder zu wenige nutzbare Intervalle.";
+"hrv.quality.message.high_artifacts" = "Mehrere Herzschlagintervalle mussten korrigiert werden.";
+"hrv.quality.message.moderate_artifacts" = "Einige Herzschlagintervalle mussten korrigiert werden.";
+"hrv.quality.message.low_artifacts" = "Wenige Herzschlagintervalle mussten korrigiert werden.";
+"hrv.quality.message.short_scan" = "Die Messung war kurz, daher sind einige Metriken weniger zuverlässig.";
+"hrv.quality.message.too_short" = "Die Messung war zu kurz für eine sichere Interpretation.";
+
+/* HRV Interpretation */
+"hrv.interpretation.uncertain.bad_quality.summary" = "Die Messqualität war nicht stark genug für eine sichere Interpretation.";
+"hrv.interpretation.uncertain.bad_quality.recommendation" = "Wiederhole die Messung sitzend, ruhig, mit warmen Händen und gleichmäßigem Fingerdruck.";
+"hrv.interpretation.baseline.none.summary" = "Deine HRV-Basislinie wird noch aufgebaut.";
+"hrv.interpretation.baseline.none.recommendation" = "Miss weiter möglichst jeden Morgen zur gleichen Zeit. Nach einigen weiteren Messungen wird deine Orientierung persönlicher.";
+"hrv.interpretation.push.summary" = "Dein Erholungssignal sieht heute stark aus.";
+"hrv.interpretation.push.recommendation" = "Das kann ein guter Tag für Training, Fokus oder wichtige Arbeit sein, wenn du dich gut fühlst.";
+"hrv.interpretation.normal.summary" = "Deine HRV wirkt heute ausgeglichen.";
+"hrv.interpretation.normal.recommendation" = "Bleib bei deinem normalen Plan und halte deinen Rhythmus.";
+"hrv.interpretation.maintain.summary" = "Deine HRV deutet heute auf leichte Aktivierung hin.";
+"hrv.interpretation.maintain.recommendation" = "Du kannst leisten, solltest aber unnötige Zusatzbelastung vermeiden. Moderates Training, Gehen, Hydration und ruhiges Tempo passen heute besser.";
+"hrv.interpretation.recover.summary" = "Deine Erholungsmarker sind heute gedämpft.";
+"hrv.interpretation.recover.recommendation" = "Wähle leichtere Bewegung, Hydration, weniger Stress und wenn möglich einen früheren Abend.";
+"hrv.interpretation.high_hrv_fatigue.summary" = "Deine HRV ist im Vergleich zu deiner Basislinie ungewöhnlich hoch.";
+"hrv.interpretation.high_hrv_fatigue.recommendation" = "Wenn du dich müde fühlst, kann das auf Erholungsbedarf hinweisen. Halte den Tag moderat und achte auf deinen Körper.";
+"hrv.interpretation.high_hrv_good.summary" = "Dein Erholungssignal ist höher als gewöhnlich.";
+"hrv.interpretation.high_hrv_good.recommendation" = "Wenn du dich gut fühlst, kann das ein starker Erholungstag sein.";
+"hrv.explanation.amo50_elevated" = "Die Schlag-zu-Schlag-Bündelung ist höher als gewöhnlich, was oft mit stärkerer sympathischer Aktivierung einhergeht.";
+
+/* HRV Erinnerungen */
+"hrv.reminders.no_measurement.title" = "HRV-Check-in";
+"hrv.reminders.no_measurement.general.body" = "Heute gibt es noch keine HRV-Messung. Mach eine kurze Messung, wenn du ruhig bist, damit die heutige Orientierung genauer wird.";
+"hrv.reminders.no_measurement.baseline_building.body" = "Du baust gerade deine HRV-Basislinie auf. Eine ruhige Messung heute hilft der App, deinen normalen Rhythmus zu verstehen.";
+"hrv.reminders.bad_quality.title" = "HRV-Messung wiederholen";
+"hrv.reminders.bad_quality.body" = "Deine letzte HRV-Messung war nicht klar genug für sichere Orientierung. Wiederhole sie sitzend und ruhig, wenn du eine entspannte Minute hast.";
+"hrv.reminders.with_measurement.push.title" = "Starkes Erholungssignal";
+"hrv.reminders.with_measurement.push.body" = "Dein Erholungssignal sieht heute stark aus. Guter Tag für fokussierte Arbeit oder stärkeres Training, wenn du dich gut fühlst.";
+"hrv.reminders.with_measurement.normal.title" = "HRV heute ausgeglichen";
+"hrv.reminders.with_measurement.normal.body" = "Deine HRV wirkt heute ausgeglichen. Bleib bei deinem normalen Plan und halte deinen Rhythmus.";
+"hrv.reminders.with_measurement.maintain.title" = "Leichte Aktivierung heute";
+"hrv.reminders.with_measurement.maintain.body" = "Deine HRV deutet heute auf leichte Aktivierung hin. Du kannst leisten, solltest aber nicht zu viel Zusatzstress aufbauen.";
+"hrv.reminders.with_measurement.recover.title" = "Heute Erholung priorisieren";
+"hrv.reminders.with_measurement.recover.body" = "Deine Erholungsmarker sind heute gedämpft. Wähle leichtere Bewegung, Hydration und wenn möglich einen früheren Abend.";
+"hrv.reminders.with_measurement.uncertain.title" = "HRV heute unklar";
+"hrv.reminders.with_measurement.uncertain.body" = "Die heutige Messung war nicht klar genug für starke Orientierung. Wiederhole sie, wenn du eine ruhige Minute hast.";
+
+/* HRV Metrik-Glossar (Kernmetriken; weitere Metriken folgen) */
+"hrv.metrics.rmssd.title" = "RMSSD";
+"hrv.metrics.rmssd.short" = "Kurzfristige Variabilität";
+"hrv.metrics.rmssd.meaning" = "RMSSD spiegelt Schlag-zu-Schlag-Änderungen wider, die vor allem vom parasympathischen (Erholungs-) Teil deines Nervensystems gesteuert werden.";
+"hrv.metrics.rmssd.low" = "Ein niedrigerer RMSSD als gewöhnlich kann auf Stress, schlechten Schlaf, Krankheit oder hartes Training hinweisen.";
+"hrv.metrics.rmssd.high" = "Ein höherer RMSSD spiegelt oft gute Erholung wider. Ungewöhnlich hohe Werte mit Müdigkeit können jedoch Erholungsbedarf bedeuten.";
+"hrv.metrics.rmssd.reliability" = "Auch bei kurzen, ruhigen Messungen zuverlässig.";
+"hrv.metrics.sdnn.title" = "SDNN";
+"hrv.metrics.sdnn.short" = "Gesamtvariabilität";
+"hrv.metrics.sdnn.meaning" = "SDNN erfasst die gesamte Streuung deiner Intervalllängen und spiegelt beide Teile deines Nervensystems wider.";
+"hrv.metrics.sdnn.low" = "Ein niedrigerer SDNN kann auf geringere Gesamtanpassungsfähigkeit hinweisen.";
+"hrv.metrics.sdnn.high" = "Ein höherer SDNN spiegelt in der Regel eine größere Gesamtvariabilität wider.";
+"hrv.metrics.sdnn.reliability" = "Bei längeren Messungen zuverlässiger.";
+"hrv.metrics.pnn50.title" = "pNN50";
+"hrv.metrics.pnn50.short" = "Anteil großer Schlagänderungen";
+"hrv.metrics.pnn50.meaning" = "pNN50 ist der Prozentsatz benachbarter Schläge, die sich um mehr als 50 ms unterscheiden, ein weiterer parasympathischer Marker.";
+"hrv.metrics.pnn50.low" = "Ein niedriger pNN50 kann mit Stress oder Müdigkeit einhergehen.";
+"hrv.metrics.pnn50.high" = "Ein höherer pNN50 geht meist mit entspannten, gut erholten Zuständen einher.";
+"hrv.metrics.pnn50.reliability" = "Bei kurzen Messungen nutzbar, aber unruhiger als RMSSD.";
+"hrv.metrics.amo50.title" = "AMo50";
+"hrv.metrics.amo50.short" = "Schlagbündelung";
+"hrv.metrics.amo50.meaning" = "AMo50 beschreibt, wie eng deine Intervalle um den häufigsten Wert gruppiert sind. Engere Bündelung deutet auf stärkere sympathische Aktivierung hin.";
+"hrv.metrics.amo50.low" = "Ein niedrigerer AMo50 deutet auf einen entspannteren, variableren Rhythmus hin.";
+"hrv.metrics.amo50.high" = "Ein höherer AMo50 deutet auf einen steiferen, aktivierten Rhythmus hin.";
+"hrv.metrics.amo50.reliability" = "Am besten bei Standard- oder längeren Messungen.";
+"hrv.metrics.lfhf.title" = "LF/HF";
+"hrv.metrics.lfhf.short" = "Frequenzbalance (nur Kontext)";
+"hrv.metrics.lfhf.meaning" = "LF/HF vergleicht niedrige und hohe Frequenzleistung. Es ist leicht falsch zu deuten, daher behandelt diese App es nur als unterstützenden Kontext, nie als einfaches Stressmaß.";
+"hrv.metrics.lfhf.low" = "Mit Vorsicht deuten; viele Faktoren bewegen dieses Verhältnis.";
+"hrv.metrics.lfhf.high" = "Mit Vorsicht deuten; viele Faktoren bewegen dieses Verhältnis.";
+"hrv.metrics.lfhf.reliability" = "Benötigt eine tiefe Messung und ist empfindlich gegenüber der Atmung.";

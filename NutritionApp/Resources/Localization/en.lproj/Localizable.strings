@@ -54,3 +54,165 @@
 "settings.personal" = "Personal Info";
 "settings.reminders" = "Reminders";
 "settings.recommend_app" = "Recommend App";
+
+/* ===================== HRV module ===================== */
+
+/* HRV onboarding */
+"hrv.onboarding.what_is_hrv.title" = "What is HRV?";
+"hrv.onboarding.what_is_hrv.body" = "HRV means heart rate variability. It measures tiny changes in time between your heartbeats.";
+"hrv.onboarding.what_is_hrv.bullet_1" = "Your heart does not beat like a perfect metronome.";
+"hrv.onboarding.what_is_hrv.bullet_2" = "A flexible rhythm can reflect better nervous-system adaptability.";
+"hrv.onboarding.what_is_hrv.bullet_3" = "HRV can be affected by sleep, stress, illness, training, alcohol, caffeine, hydration, and emotional pressure.";
+
+"hrv.onboarding.camera_scan.title" = "How the phone scan works";
+"hrv.onboarding.camera_scan.body" = "The camera sees tiny colour changes in your fingertip. These changes follow your pulse wave, and the app estimates the time between beats.";
+"hrv.onboarding.camera_scan.bullet_1" = "This is a camera-based HRV estimate.";
+"hrv.onboarding.camera_scan.bullet_2" = "It is useful for trends when measured carefully.";
+"hrv.onboarding.camera_scan.bullet_3" = "It is not ECG and not a medical diagnosis.";
+
+"hrv.onboarding.best_time.title" = "When to measure";
+"hrv.onboarding.best_time.body" = "For the best trend, measure at the same time each morning before caffeine, food, training, or work stress.";
+"hrv.onboarding.best_time.bullet_1" = "Measure after waking.";
+"hrv.onboarding.best_time.bullet_2" = "Measure before caffeine or food.";
+"hrv.onboarding.best_time.bullet_3" = "Use the same body position each day.";
+"hrv.onboarding.best_time.bullet_4" = "Try to measure in the same morning time window.";
+
+"hrv.onboarding.preparation.title" = "Before you start";
+"hrv.onboarding.preparation.body" = "Stillness matters. HRV is sensitive, so the cleanest scans happen when your body is calm and your finger stays steady.";
+"hrv.onboarding.preparation.bullet_1" = "Sit or lie down.";
+"hrv.onboarding.preparation.bullet_2" = "Rest for one to two minutes.";
+"hrv.onboarding.preparation.bullet_3" = "Warm your hands if your fingers are cold.";
+"hrv.onboarding.preparation.bullet_4" = "Breathe normally and avoid talking.";
+
+"hrv.onboarding.finger_placement.title" = "Place your finger gently";
+"hrv.onboarding.finger_placement.body" = "Cover the rear camera fully with your fingertip. Use gentle, steady pressure. If you press too hard, blood flow changes and the scan becomes less reliable.";
+"hrv.onboarding.finger_placement.bullet_1" = "Cover the camera fully.";
+"hrv.onboarding.finger_placement.bullet_2" = "Do not press too hard.";
+"hrv.onboarding.finger_placement.bullet_3" = "Keep your finger still.";
+
+"hrv.onboarding.during_scan.title" = "During the scan";
+"hrv.onboarding.during_scan.body" = "Just breathe normally. Do not try to improve the score. The goal is to capture your real state.";
+"hrv.onboarding.during_scan.bullet_1" = "Stay still.";
+"hrv.onboarding.during_scan.bullet_2" = "Do not talk.";
+"hrv.onboarding.during_scan.bullet_3" = "Keep breathing naturally.";
+
+"hrv.onboarding.scan_length.title" = "Choose your scan depth";
+"hrv.onboarding.scan_length.body" = "Short scans are useful for daily trends. Longer scans unlock deeper HRV metrics.";
+"hrv.onboarding.scan_length.bullet_1" = "Quick Scan: 60 to 120 seconds for daily readiness.";
+"hrv.onboarding.scan_length.bullet_2" = "Standard Scan: 5 minutes for deeper analysis.";
+"hrv.onboarding.scan_length.bullet_3" = "Deep Scan: 300 clean beats or longer for advanced HRV metrics.";
+
+"hrv.onboarding.results.title" = "How to read your result";
+"hrv.onboarding.results.body" = "One scan is a snapshot. Your personal trend is more important than one isolated value.";
+"hrv.onboarding.results.bullet_1" = "Your personal baseline matters more than a generic range.";
+"hrv.onboarding.results.bullet_2" = "Low HRV can reflect stress, poor sleep, illness, dehydration, alcohol, or hard training.";
+"hrv.onboarding.results.bullet_3" = "High HRV can mean good recovery, but if you feel exhausted it may also reflect recovery demand.";
+
+"hrv.onboarding.daily_guidance.title" = "Your daily guidance";
+"hrv.onboarding.daily_guidance.body" = "The app uses your HRV trend to make daily reminders more personal.";
+"hrv.onboarding.daily_guidance.bullet_1" = "If you measured today, reminders can include HRV-based guidance.";
+"hrv.onboarding.daily_guidance.bullet_2" = "If you have not measured, reminders will gently nudge you to take a scan.";
+"hrv.onboarding.daily_guidance.bullet_3" = "The more consistently you measure, the better your guidance becomes.";
+
+"hrv.onboarding.limitations.title" = "Important limitations";
+"hrv.onboarding.limitations.body" = "HRV is not a medical diagnosis. This app does not detect heart disease, arrhythmias, or medical emergencies.";
+"hrv.onboarding.limitations.bullet_1" = "Camera HRV is an estimate, not ECG.";
+"hrv.onboarding.limitations.bullet_2" = "Movement, cold fingers, pressure, medication, and arrhythmias can affect accuracy.";
+"hrv.onboarding.limitations.bullet_3" = "If you feel chest pain, faintness, severe shortness of breath, or unusual symptoms, seek medical help.";
+
+"hrv.onboarding.first_scan.title" = "Ready for your first scan?";
+"hrv.onboarding.first_scan.body" = "Take your first calm scan now so the app can start building your personal HRV baseline.";
+"hrv.onboarding.first_scan.primary_cta" = "Start HRV scan";
+"hrv.onboarding.first_scan.secondary_cta" = "Remind me later";
+
+/* HRV scan signal feedback */
+"hrv.scan.signal.good" = "Good signal";
+"hrv.scan.signal.too_much_pressure" = "Too much pressure";
+"hrv.scan.signal.too_little_pressure" = "Too little pressure";
+"hrv.scan.signal.finger_moved" = "Finger moved";
+"hrv.scan.signal.camera_not_covered" = "Camera not covered";
+"hrv.scan.signal.hold_still" = "Hold still";
+"hrv.scan.signal.breathe_normally" = "Breathe normally";
+"hrv.scan.signal.almost_done" = "Almost done";
+"hrv.scan.signal.complete" = "Measurement complete";
+
+/* HRV quality */
+"hrv.quality.excellent" = "Excellent";
+"hrv.quality.good" = "Good";
+"hrv.quality.usable" = "Usable";
+"hrv.quality.weak" = "Weak";
+"hrv.quality.invalid" = "Invalid";
+"hrv.quality.message.rejected" = "The scan had too many artifacts or too few usable intervals.";
+"hrv.quality.message.high_artifacts" = "Several heartbeat intervals had to be corrected.";
+"hrv.quality.message.moderate_artifacts" = "Some heartbeat intervals had to be corrected.";
+"hrv.quality.message.low_artifacts" = "A few heartbeat intervals had to be corrected.";
+"hrv.quality.message.short_scan" = "The scan was short, so some metrics are less reliable.";
+"hrv.quality.message.too_short" = "The scan was too short for confident interpretation.";
+
+/* HRV interpretation */
+"hrv.interpretation.uncertain.bad_quality.summary" = "The scan quality was not strong enough for a confident interpretation.";
+"hrv.interpretation.uncertain.bad_quality.recommendation" = "Retake the scan seated, calm, with warm hands and steady finger pressure.";
+"hrv.interpretation.baseline.none.summary" = "Your HRV baseline is still being built.";
+"hrv.interpretation.baseline.none.recommendation" = "Keep measuring at the same time each morning. After a few more scans, your guidance will become more personal.";
+"hrv.interpretation.push.summary" = "Your recovery signal looks strong today.";
+"hrv.interpretation.push.recommendation" = "This can be a good day to train, focus, or push important work if you feel good.";
+"hrv.interpretation.normal.summary" = "Your HRV looks balanced today.";
+"hrv.interpretation.normal.recommendation" = "Keep your normal plan and maintain your rhythm.";
+"hrv.interpretation.maintain.summary" = "Your HRV suggests mild activation today.";
+"hrv.interpretation.maintain.recommendation" = "You can perform, but avoid stacking unnecessary stress. Moderate training, walking, hydration, and steady pacing fit better today.";
+"hrv.interpretation.recover.summary" = "Your recovery markers are suppressed today.";
+"hrv.interpretation.recover.recommendation" = "Choose easier movement, hydration, lower stress, and an earlier night if possible.";
+"hrv.interpretation.high_hrv_fatigue.summary" = "Your HRV is unusually high compared with your baseline.";
+"hrv.interpretation.high_hrv_fatigue.recommendation" = "If you feel tired, this may reflect recovery demand. Keep the day moderate and listen to your body.";
+"hrv.interpretation.high_hrv_good.summary" = "Your recovery signal is higher than usual.";
+"hrv.interpretation.high_hrv_good.recommendation" = "If you feel good, this may be a strong recovery day.";
+"hrv.explanation.amo50_elevated" = "Beat-to-beat clustering is higher than usual, which often goes with more sympathetic activation.";
+
+/* HRV reminders */
+"hrv.reminders.no_measurement.title" = "HRV check-in";
+"hrv.reminders.no_measurement.general.body" = "No HRV scan yet today. Take a quick scan when you are calm so today's guidance can be more accurate.";
+"hrv.reminders.no_measurement.baseline_building.body" = "You are building your HRV baseline. One calm scan today helps the app understand your normal rhythm.";
+"hrv.reminders.bad_quality.title" = "Retake your HRV scan";
+"hrv.reminders.bad_quality.body" = "Your last HRV scan was not clear enough for confident guidance. Retake it seated and still when you have a calm minute.";
+"hrv.reminders.with_measurement.push.title" = "Strong recovery signal";
+"hrv.reminders.with_measurement.push.body" = "Your recovery signal looks strong today. Good day for focused work or stronger training if you feel good.";
+"hrv.reminders.with_measurement.normal.title" = "Balanced HRV today";
+"hrv.reminders.with_measurement.normal.body" = "Your HRV looks balanced today. Keep your normal plan and maintain your rhythm.";
+"hrv.reminders.with_measurement.maintain.title" = "Mild activation today";
+"hrv.reminders.with_measurement.maintain.body" = "Your HRV suggests mild activation today. You can perform, but avoid stacking too much stress.";
+"hrv.reminders.with_measurement.recover.title" = "Recovery first today";
+"hrv.reminders.with_measurement.recover.body" = "Your recovery markers are suppressed today. Choose easier movement, hydration, and an earlier night if possible.";
+"hrv.reminders.with_measurement.uncertain.title" = "HRV unclear today";
+"hrv.reminders.with_measurement.uncertain.body" = "Today's scan was not clear enough for strong guidance. Retake it when you have a calm minute.";
+
+/* HRV metric glossary (core metrics; remaining metrics pending content) */
+"hrv.metrics.rmssd.title" = "RMSSD";
+"hrv.metrics.rmssd.short" = "Short-term variability";
+"hrv.metrics.rmssd.meaning" = "RMSSD reflects beat-to-beat changes driven mainly by the parasympathetic (recovery) branch of your nervous system.";
+"hrv.metrics.rmssd.low" = "Lower RMSSD than usual can reflect stress, poor sleep, illness, or hard training.";
+"hrv.metrics.rmssd.high" = "Higher RMSSD often reflects good recovery, though unusually high values with fatigue can mean recovery demand.";
+"hrv.metrics.rmssd.reliability" = "Reliable even on short, calm scans.";
+"hrv.metrics.sdnn.title" = "SDNN";
+"hrv.metrics.sdnn.short" = "Overall variability";
+"hrv.metrics.sdnn.meaning" = "SDNN captures the overall spread of your interval lengths, reflecting both branches of your nervous system.";
+"hrv.metrics.sdnn.low" = "Lower SDNN can reflect reduced overall adaptability.";
+"hrv.metrics.sdnn.high" = "Higher SDNN generally reflects greater overall variability.";
+"hrv.metrics.sdnn.reliability" = "More reliable on longer scans.";
+"hrv.metrics.pnn50.title" = "pNN50";
+"hrv.metrics.pnn50.short" = "Share of large beat changes";
+"hrv.metrics.pnn50.meaning" = "pNN50 is the percentage of adjacent beats that differ by more than 50 ms, another parasympathetic marker.";
+"hrv.metrics.pnn50.low" = "A low pNN50 can accompany stress or fatigue.";
+"hrv.metrics.pnn50.high" = "A higher pNN50 usually accompanies relaxed, well-recovered states.";
+"hrv.metrics.pnn50.reliability" = "Usable on short scans, but noisier than RMSSD.";
+"hrv.metrics.amo50.title" = "AMo50";
+"hrv.metrics.amo50.short" = "Beat clustering";
+"hrv.metrics.amo50.meaning" = "AMo50 describes how tightly your intervals cluster around the most common value; tighter clustering suggests more sympathetic activation.";
+"hrv.metrics.amo50.low" = "A lower AMo50 suggests a more relaxed, variable rhythm.";
+"hrv.metrics.amo50.high" = "A higher AMo50 suggests a stiffer, more activated rhythm.";
+"hrv.metrics.amo50.reliability" = "Best on standard or longer scans.";
+"hrv.metrics.lfhf.title" = "LF/HF";
+"hrv.metrics.lfhf.short" = "Frequency balance (context only)";
+"hrv.metrics.lfhf.meaning" = "LF/HF compares low and high frequency power. It is easy to misread, so this app treats it only as supporting context, never as a simple stress meter.";
+"hrv.metrics.lfhf.low" = "Interpret with caution; many factors move this ratio.";
+"hrv.metrics.lfhf.high" = "Interpret with caution; many factors move this ratio.";
+"hrv.metrics.lfhf.reliability" = "Needs a deep scan and is sensitive to breathing.";
