@@ -12,8 +12,19 @@ struct HRVCapturedIntervals: Sendable, Equatable {
 /// will be a follow-up that conforms to this protocol. Today we ship the
 /// simulated provider, which lets the entire pipeline run in CI and UI tests with
 /// no device and no fingertip.
-protocol HRVCaptureProvider: Sendable {
+protocol HRVCaptureProvider {
     func capture(mode: HRVScanMode) async throws -> HRVCapturedIntervals
+}
+
+/// Suggested capture duration per scan depth (seconds).
+extension HRVScanMode {
+    var captureDurationSeconds: Double {
+        switch self {
+        case .quick:    return HRVConstants.quickScanRecommendedSeconds   // 120
+        case .standard: return HRVConstants.standardScanSeconds           // 300
+        case .deep:     return HRVConstants.standardScanSeconds + 60       // a bit longer
+        }
+    }
 }
 
 /// Simulated capture source for autonomous testing, previews, and demos.
@@ -77,12 +88,18 @@ enum HRVScanRunner {
             tags: tags)
     }
 
-    /// The provider the app should use for a scan: simulated when automation asks
-    /// for it, otherwise the (future) real camera provider. For now both branches
-    /// return the simulator because the camera pipeline is a separate follow-up;
-    /// this keeps the seam in place so swapping it in later is a one-line change.
+    /// The provider the app should use for a scan. Automation forces the simulator
+    /// so UI/CI runs need no device or fingertip. The iOS Simulator has no usable
+    /// camera, so it also falls back to the simulator. On a real device we use the
+    /// AVFoundation camera PPG pipeline.
     static func defaultProvider() -> any HRVCaptureProvider {
-        // TODO: return RealCameraPPGProvider() once the AVFoundation pipeline lands.
-        SimulatedHRVCaptureProvider(simulateRealTimeDelay: !HRVAutomation.simulateScan)
+        if HRVAutomation.simulateScan {
+            return SimulatedHRVCaptureProvider(simulateRealTimeDelay: false)
+        }
+        #if targetEnvironment(simulator)
+        return SimulatedHRVCaptureProvider(simulateRealTimeDelay: true)
+        #else
+        return HRVCameraPPGProvider()
+        #endif
     }
 }
