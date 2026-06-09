@@ -79,12 +79,10 @@ final class HRVOnboardingLocalizationTests: XCTestCase {
             keys.append("hrv.scan.signal.\(s)")
         }
 
-        // Core metric glossary (the localized subset).
-        for metric in ["rmssd", "sdnn", "pnn50", "amo50", "lfhf"] {
-            if let def = HRVMetricDefinitions.definition(for: metric) {
-                keys += [def.titleKey, def.shortDescriptionKey, def.whatItMeansKey,
-                         def.whenLowKey, def.whenHighKey, def.reliabilityKey]
-            }
+        // Full metric glossary: every defined metric must be localized.
+        for def in HRVMetricDefinitions.all {
+            keys += [def.titleKey, def.shortDescriptionKey, def.whatItMeansKey,
+                     def.whenLowKey, def.whenHighKey, def.reliabilityKey]
         }
         return keys
     }

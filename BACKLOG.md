@@ -50,5 +50,10 @@ und nach in GitHub Issues.
 - [ ] BL29 „Nicht gefunden"-Barcodes sammeln & nachpflegen
 - [ ] BL30 Crowd-Beiträge in die zentrale DB (mit Review)
 
+## Offen – HRV
+- [ ] BL35 17 fehlende Sprachdateien (.lproj) ergänzen, damit die Auswahl wirklich 19 Sprachen abdeckt. Aktuell sind nur EN und DE übersetzt; die übrigen Sprachen fallen zur Laufzeit auf Englisch zurück.
+- [ ] BL36 Echte Kamera-PPG-Messung auf einem echten Gerät testen und das Peak-Detection-Tuning gegen reale Aufnahmen prüfen (der Simulator hat keine Kamera).
+- [ ] BL37 Frequenzbereich (LF/HF, Total Power) mit echter PSD implementieren. Bisher bewusst nur gated, keine erfundenen Werte.
+
 ## Geparkt
 - [ ] UI2–UI4 XCUITest-Bundle + UI-Tests
