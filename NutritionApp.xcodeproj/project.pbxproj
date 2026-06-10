@@ -336,7 +336,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Scannt Produkt-Barcodes, um Nährwerte automatisch zu übernehmen.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Misst deine Herzfrequenzvariabilität an der Fingerspitze und scannt Produkt-Barcodes, um HRV und Nährwerte automatisch zu erfassen.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Liest deine Ernährungsdaten aus Apple Health, um deinen Tagesüberblick zu zeigen.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Speichert deine erfassten Mahlzeiten als Ernährungsdaten in Apple Health.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Wähle ein Foto der Nährwerttabelle, um die Werte automatisch zu übernehmen.";
@@ -374,7 +374,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Scannt Produkt-Barcodes, um Nährwerte automatisch zu übernehmen.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Misst deine Herzfrequenzvariabilität an der Fingerspitze und scannt Produkt-Barcodes, um HRV und Nährwerte automatisch zu erfassen.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Liest deine Ernährungsdaten aus Apple Health, um deinen Tagesüberblick zu zeigen.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Speichert deine erfassten Mahlzeiten als Ernährungsdaten in Apple Health.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Wähle ein Foto der Nährwerttabelle, um die Werte automatisch zu übernehmen.";
