@@ -6,10 +6,10 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .breakfast: "Frühstück"
-        case .lunch:     "Mittag"
-        case .dinner:    "Abend"
-        case .snack:     "Snack"
+        case .breakfast: "meal.breakfast".localized()
+        case .lunch:     "meal.lunch".localized()
+        case .dinner:    "meal.dinner".localized()
+        case .snack:     "meal.snack".localized()
         }
     }
 }

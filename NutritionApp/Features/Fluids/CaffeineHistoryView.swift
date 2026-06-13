@@ -41,35 +41,35 @@ struct CaffeineHistoryView: View {
             VStack(alignment: .leading, spacing: 16) {
                 if points.allSatisfy({ $0.peak == 0 }) {
                     ContentUnavailableView("Noch keine Koffein-Historie", systemImage: "cup.and.saucer",
-                        description: Text("Erfasse Koffein im Trinken-Reiter – dann erscheint hier dein Verlauf."))
+                        description: Text("caff.empty".localized()))
                         .padding(.top, 40)
                 } else {
                     chartCard
-                    Text("Spitze = höchster wirksamer Koffeinspiegel des Tages, Schnitt = Tagesmittel über den wachen Tag (6–24 Uhr). Modell: Halbwertszeit 5 h. Die grüne Linie ist deine Schlaf-Schwelle.")
+                    Text("caff.note".localized())
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
             .padding(16)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Koffein im Körper")
+        .navigationTitle("caff.title".localized())
         .navigationBarTitleDisplayMode(.inline)
     }
 
     private var chartCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Wirksames Koffein – 14 Tage").font(.headline)
+            Text("caff.active_14".localized()).font(.headline)
             Chart {
                 ForEach(points) { p in
-                    BarMark(x: .value("Tag", p.day, unit: .day), y: .value("Spitze (mg)", p.peak))
+                    BarMark(x: .value("common.day".localized(), p.day, unit: .day), y: .value("caff.peak".localized(), p.peak))
                         .foregroundStyle(.brown.opacity(0.8))
                 }
                 ForEach(points) { p in
-                    LineMark(x: .value("Tag", p.day, unit: .day), y: .value("Schnitt (mg)", p.avg))
+                    LineMark(x: .value("common.day".localized(), p.day, unit: .day), y: .value("caff.avg".localized(), p.avg))
                         .foregroundStyle(.orange)
                         .interpolationMethod(.monotone)
                 }
-                RuleMark(y: .value("Schlaf", threshold))
+                RuleMark(y: .value("recovery.sleep".localized(), threshold))
                     .foregroundStyle(Theme.accent.opacity(0.7))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
             }

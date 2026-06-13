@@ -62,20 +62,20 @@ struct FluidsView: View {
                 .padding(16)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Trinken")
+            .navigationTitle("tab.drink".localized())
             .accessibilityIdentifier("screen.fluids")
             .overlay(alignment: .bottom) { if showUndo { undoBar } }
         }
         .onAppear { now = Date() }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { now = $0 }
-        .alert("Wasser hinzufügen", isPresented: $showCustomWater) {
-            TextField("Menge in ml", text: $customWaterText).keyboardType(.numberPad)
+        .alert("fluids.add_water".localized(), isPresented: $showCustomWater) {
+            TextField("fluids.amount_ml".localized(), text: $customWaterText).keyboardType(.numberPad)
                 .accessibilityIdentifier("fluids.water.customField")
-            Button("Hinzufügen") {
+            Button("common.add".localized()) {
                 if let ml = Double(customWaterText), ml > 0 { addWater(ml) }
                 customWaterText = ""
             }
-            Button("Abbrechen", role: .cancel) { customWaterText = "" }
+            Button("common.cancel".localized(), role: .cancel) { customWaterText = "" }
         }
     }
 
@@ -90,7 +90,7 @@ struct FluidsView: View {
         let behind = waterGoal * dayFrac - todayWater             // >0 = im Rückstand
         return VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Label("Flüssigkeit", systemImage: "drop.fill").font(.headline).foregroundStyle(.blue)
+                Label("fluids.title".localized(), systemImage: "drop.fill").font(.headline).foregroundStyle(.blue)
                 Spacer()
                 Text("\(Int(todayWater)) / \(Int(waterGoal)) ml")
                     .font(.subheadline.weight(.semibold)).monospacedDigit().foregroundStyle(.secondary)
@@ -112,16 +112,16 @@ struct FluidsView: View {
                 .foregroundStyle(behind > 200 ? .orange : (behind < -200 ? .green : .secondary))
             Text(remaining > 0
                  ? "Noch \(Int(remaining)) ml bis zum Ziel (\(Int(weightKg * 35)) ml ≈ 35 ml/kg)."
-                 : "Tagesziel erreicht – stark! 💧")
+                 : "fluids.goal_reached".localized())
                 .font(.caption2).foregroundStyle(.tertiary)
             HStack(spacing: 8) {
-                quickButton("Glas", "200 ml") { addWater(200) }
+                quickButton("fluids.glass".localized(), "200 ml") { addWater(200) }
                     .accessibilityIdentifier("fluids.water.add200")
                 quickButton("+250", "ml") { addWater(250) }
                     .accessibilityIdentifier("fluids.water.add250")
                 quickButton("+500", "ml") { addWater(500) }
                     .accessibilityIdentifier("fluids.water.add500")
-                quickButton("…", "frei") { showCustomWater = true }
+                quickButton("…", "fluids.custom".localized()) { showCustomWater = true }
                     .accessibilityIdentifier("fluids.water.addCustom")
             }
         }
@@ -137,14 +137,14 @@ struct FluidsView: View {
             HStack {
                 Label("Koffein", systemImage: "cup.and.saucer.fill").font(.headline).foregroundStyle(.brown)
                 Spacer()
-                Text("HWZ 5 h").font(.caption2).foregroundStyle(.tertiary)
+                Text("fluids.half_life".localized()).font(.caption2).foregroundStyle(.tertiary)
             }
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text("\(Int(activeCaffeine.rounded()))")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .contentTransition(.numericText()).monospacedDigit()
                     .accessibilityIdentifier("fluids.caffeine.activeValue")
-                Text("mg aktiv").font(.subheadline).foregroundStyle(.secondary)
+                Text("fluids.mg_active".localized()).font(.subheadline).foregroundStyle(.secondary)
             }
             HStack(spacing: 8) {
                 Image(systemName: sleepIcon).foregroundStyle(sleepColor)
@@ -152,24 +152,24 @@ struct FluidsView: View {
             }
             Divider()
             HStack {
-                statColumn("Heute", "\(Int(todayCaffeine)) mg",
+                statColumn("tab.today".localized(), "\(Int(todayCaffeine)) mg",
                            overDaily ? .red : .primary)
                 Spacer()
-                statColumn("Tageslimit", "\(Int(guide.dailyLimitMg)) mg", .secondary)
+                statColumn("fluids.daily_limit".localized(), "\(Int(guide.dailyLimitMg)) mg", .secondary)
                 Spacer()
                 statColumn("pro kg", String(format: "%.1f mg", weightKg > 0 ? todayCaffeine / weightKg : 0), .secondary)
             }
             if overDaily {
-                warn("Über dem Tageslimit (\(Int(guide.dailyLimitMg)) mg ≈ 5,7 mg/kg).")
+                warn(String(format: "fluids.over_limit".localized(), Int(guide.dailyLimitMg)))
             } else if overSingle {
-                warn("Einzeldosis über \(Int(guide.singleLimitMg)) mg (3 mg/kg).")
+                warn(String(format: "fluids.single_dose".localized(), Int(guide.singleLimitMg)))
             }
             Divider()
             NavigationLink {
                 CaffeineHistoryView()
             } label: {
                 HStack {
-                    Label("Verlauf: Koffein im Körper", systemImage: "chart.bar.xaxis")
+                    Label("fluids.caffeine_history".localized(), systemImage: "chart.bar.xaxis")
                     Spacer()
                     Image(systemName: "chevron.right").font(.footnote).foregroundStyle(.tertiary)
                 }
@@ -194,7 +194,7 @@ struct FluidsView: View {
         if let safe = sleepSafeTime {
             return "Schlaf-ok ab \(safe.formatted(date: .omitted, time: .shortened))"
         }
-        return "Noch wirksam"
+        return "fluids.still_active".localized()
     }
 
     // MARK: Abbaukurve
@@ -205,26 +205,26 @@ struct FluidsView: View {
                       (sleepSafeTime ?? now.addingTimeInterval(8 * 3600)).addingTimeInterval(3600))
         let curve = CaffeineKinetics.curve(doses: caffeineDoses, from: start, to: end)
         return VStack(alignment: .leading, spacing: 12) {
-            Text("Koffein-Abbau").font(.headline)
+            Text("fluids.caffeine_decay".localized()).font(.headline)
             Chart {
                 ForEach(curve) { p in
-                    AreaMark(x: .value("Zeit", p.date), y: .value("mg", p.mg))
+                    AreaMark(x: .value("common.time".localized(), p.date), y: .value("mg", p.mg))
                         .foregroundStyle(.brown.opacity(0.12))
-                    LineMark(x: .value("Zeit", p.date), y: .value("mg", p.mg))
+                    LineMark(x: .value("common.time".localized(), p.date), y: .value("mg", p.mg))
                         .foregroundStyle(.brown)
                         .interpolationMethod(.monotone)
                 }
-                RuleMark(y: .value("Schlaf", guide.sleepThresholdMg))
+                RuleMark(y: .value("recovery.sleep".localized(), guide.sleepThresholdMg))
                     .foregroundStyle(Theme.accent.opacity(0.7))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
                     .annotation(position: .top, alignment: .leading) {
-                        Text("Schlaf-Schwelle").font(.caption2).foregroundStyle(Theme.accent)
+                        Text("fluids.sleep_threshold".localized()).font(.caption2).foregroundStyle(Theme.accent)
                     }
-                RuleMark(x: .value("Jetzt", now))
+                RuleMark(x: .value("fluids.now".localized(), now))
                     .foregroundStyle(.secondary.opacity(0.4))
                     .lineStyle(StrokeStyle(lineWidth: 1))
                 ForEach(caffeineDoses, id: \.date) { dose in
-                    PointMark(x: .value("Zeit", dose.date),
+                    PointMark(x: .value("common.time".localized(), dose.date),
                               y: .value("mg", CaffeineKinetics.active(at: dose.date, doses: caffeineDoses)))
                         .foregroundStyle(.brown)
                         .symbolSize(40)
@@ -242,7 +242,7 @@ struct FluidsView: View {
 
     private var drinkGridCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Getränk hinzufügen").font(.headline)
+            Text("fluids.add_drink".localized()).font(.headline)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 10)], spacing: 10) {
                 ForEach(DrinkPreset.caffeinated) { d in
                     Button { addDrink(d) } label: {
@@ -270,8 +270,8 @@ struct FluidsView: View {
 
     private var historyCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Heute").font(.headline)
-            Text("Falsch erfasst? Auf das Papierkorb-Symbol tippen oder direkt nach dem Hinzufügen auf Rückgängig.")
+            Text("tab.today".localized()).font(.headline)
+            Text("fluids.mislogged_hint".localized())
                 .font(.caption2).foregroundStyle(.secondary).padding(.top, 2).padding(.bottom, 8)
             ForEach(todayIntakes) { e in
                 HStack {
@@ -326,16 +326,16 @@ struct FluidsView: View {
     }
 
     private func pacingText(behind: Double) -> String {
-        if behind > 200 { return "\(Int(behind)) ml im Rückstand zum Tagesplan" }
-        if behind < -200 { return "\(Int(-behind)) ml über Plan – top" }
-        return "Gut im Plan ✓"
+        if behind > 200 { return String(format: "fluids.behind".localized(), Int(behind)) }
+        if behind < -200 { return String(format: "fluids.ahead".localized(), Int(-behind)) }
+        return "fluids.on_plan".localized()
     }
 
     private var undoBar: some View {
         HStack(spacing: 12) {
             Text(undoLabel).font(.subheadline).foregroundStyle(.white)
             Spacer()
-            Button("Rückgängig") { undoLast() }
+            Button("common.undo".localized()) { undoLast() }
                 .font(.subheadline.weight(.semibold)).foregroundStyle(.yellow)
                 .accessibilityIdentifier("fluids.undo")
         }
@@ -423,7 +423,7 @@ struct FluidsView: View {
         }
         try? context.save()
         now = Date()   // sofort aktualisieren, damit die neue Dosis als „aktiv" zählt
-        flashUndo("\(d.name) hinzugefügt", added)
+        flashUndo(String(format: "fluids.added".localized(), d.name), added)
     }
 
     private func delete(_ e: IntakeEntry) {

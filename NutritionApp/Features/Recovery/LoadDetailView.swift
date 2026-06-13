@@ -13,28 +13,28 @@ struct LoadDetailView: View {
     var body: some View {
         List {
             if loading {
-                HStack { ProgressView(); Text("Lade Belastungsdaten …").foregroundStyle(.secondary) }
+                HStack { ProgressView(); Text("load.loading".localized()).foregroundStyle(.secondary) }
             } else {
                 Section {
                     HStack(spacing: 16) {
-                        scorePill(title: "Bewegung heute",
+                        scorePill(title: "load.movement_today".localized(),
                                   value: rings.map { "\(Int($0.moveKcal.rounded()))" } ?? "–",
                                   unit: "kcal", color: .orange)
-                        scorePill(title: "Trainingsmin.",
+                        scorePill(title: "load.training_min".localized(),
                                   value: rings.map { "\(Int($0.exerciseMin.rounded()))" } ?? "–",
                                   unit: "min", color: .orange)
                     }
                     .padding(.vertical, 4)
                     if let rings {
-                        detailRow("Bewegung", "\(Int(rings.moveKcal.rounded())) / \(Int(rings.moveGoal.rounded())) kcal")
-                        detailRow("Trainingsminuten", "\(Int(rings.exerciseMin.rounded())) / \(Int(rings.exerciseGoal.rounded())) min")
+                        detailRow("load.movement".localized(), "\(Int(rings.moveKcal.rounded())) / \(Int(rings.moveGoal.rounded())) kcal")
+                        detailRow("load.training_minutes".localized(), "\(Int(rings.exerciseMin.rounded())) / \(Int(rings.exerciseGoal.rounded())) min")
                     }
                     if steps > 0 {
-                        detailRow("Schritte heute", steps.formatted(.number.precision(.fractionLength(0))))
+                        detailRow("load.steps_today".localized(), steps.formatted(.number.precision(.fractionLength(0))))
                     }
-                    detailRow("Workouts heute", "\(workoutsToday)")
+                    detailRow("load.workouts_today".localized(), "\(workoutsToday)")
                 } header: {
-                    Text("Heute")
+                    Text("tab.today".localized())
                 }
 
                 Section {
@@ -45,11 +45,11 @@ struct LoadDetailView: View {
                         Label("Alle Trends ansehen", systemImage: "chart.xyaxis.line")
                     }
                 } header: {
-                    Text("Trend")
+                    Text("recovery.trend".localized())
                 }
 
                 if !workouts.isEmpty {
-                    Section("Letzte Trainings") {
+                    Section("load.recent_workouts".localized()) {
                         ForEach(workouts.prefix(12)) { w in
                             HStack(spacing: 12) {
                                 Image(systemName: w.symbol).font(.title3).frame(width: 28).foregroundStyle(.orange)
@@ -66,7 +66,7 @@ struct LoadDetailView: View {
                         }
                     }
                 } else {
-                    Section { Text("Noch keine Trainings in Apple Health (letzte 14 Tage).")
+                    Section { Text("load.no_workouts".localized())
                         .font(.caption).foregroundStyle(.secondary) }
                 }
             }

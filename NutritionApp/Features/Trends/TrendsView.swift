@@ -10,6 +10,7 @@ enum TrendRange: String, CaseIterable, Identifiable {
     case d7 = "7 T", d14 = "14 T", w4 = "4 W", m3 = "3 M"
     var id: String { rawValue }
     var days: Int { switch self { case .d7: return 7; case .d14: return 14; case .w4: return 28; case .m3: return 90 } }
+    var label: String { switch self { case .d7: return "range.d7".localized(); case .d14: return "range.d14".localized(); case .w4: return "range.w4".localized(); case .m3: return "range.m3".localized() } }
 }
 
 enum TrendChartStyle { case line, bar }
@@ -27,19 +28,19 @@ struct HKMetric {
     let stat: TrendStat
     let scale: Double              // z. B. Körperfett: Bruchteil → Prozent (×100)
 
-    static let restingHR = HKMetric(title: "Ruhepuls", unit: "bpm", symbol: "heart.fill", tint: .red,
+    static let restingHR = HKMetric(title: "recovery.rhr".localized(), unit: "bpm", symbol: "heart.fill", tint: .red,
         higherIsBetter: false, style: .line, decimals: 0, id: .restingHeartRate, stat: .average, scale: 1)
     static let hrv = HKMetric(title: "HRV", unit: "ms", symbol: "waveform.path.ecg", tint: .teal,
         higherIsBetter: true, style: .line, decimals: 0, id: .heartRateVariabilitySDNN, stat: .average, scale: 1)
-    static let steps = HKMetric(title: "Schritte", unit: "", symbol: "figure.walk", tint: .green,
+    static let steps = HKMetric(title: "today.steps".localized(), unit: "", symbol: "figure.walk", tint: .green,
         higherIsBetter: true, style: .bar, decimals: 0, id: .stepCount, stat: .sum, scale: 1)
-    static let exercise = HKMetric(title: "Training", unit: "min", symbol: "figure.run", tint: .orange,
+    static let exercise = HKMetric(title: "trends.training".localized(), unit: "min", symbol: "figure.run", tint: .orange,
         higherIsBetter: true, style: .bar, decimals: 0, id: .appleExerciseTime, stat: .sum, scale: 1)
-    static let activeEnergy = HKMetric(title: "Aktiv-Kalorien", unit: "kcal", symbol: "flame.fill", tint: .pink,
+    static let activeEnergy = HKMetric(title: "trends.active_cals".localized(), unit: "kcal", symbol: "flame.fill", tint: .pink,
         higherIsBetter: true, style: .bar, decimals: 0, id: .activeEnergyBurned, stat: .sum, scale: 1)
-    static let weight = HKMetric(title: "Gewicht", unit: "kg", symbol: "scalemass.fill", tint: .indigo,
+    static let weight = HKMetric(title: "settings.weight".localized(), unit: "kg", symbol: "scalemass.fill", tint: .indigo,
         higherIsBetter: nil, style: .line, decimals: 1, id: .bodyMass, stat: .average, scale: 1)
-    static let bodyFat = HKMetric(title: "Körperfett", unit: "%", symbol: "drop.triangle.fill", tint: .brown,
+    static let bodyFat = HKMetric(title: "trends.bodyfat".localized(), unit: "%", symbol: "drop.triangle.fill", tint: .brown,
         higherIsBetter: false, style: .line, decimals: 1, id: .bodyFatPercentage, stat: .average, scale: 100)
 }
 
@@ -54,38 +55,38 @@ struct TrendsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 18) {
-                Picker("Zeitraum", selection: $range) {
-                    ForEach(TrendRange.allCases) { Text($0.rawValue).tag($0) }
+                Picker("trends.range_label".localized(), selection: $range) {
+                    ForEach(TrendRange.allCases) { Text($0.label).tag($0) }
                 }
                 .pickerStyle(.segmented)
 
-                group("Erholung") {
+                group("today.recovery".localized()) {
                     HKTrendCard(metric: .restingHR, range: range, store: health)
                     HKTrendCard(metric: .hrv, range: range, store: health)
                     SleepTrendCard(range: range, store: health)
                 }
-                group("Aktivität") {
+                group("settings.section.activity".localized()) {
                     HKTrendCard(metric: .steps, range: range, store: health)
                     HKTrendCard(metric: .exercise, range: range, store: health)
                     HKTrendCard(metric: .activeEnergy, range: range, store: health)
                 }
-                group("Körper") {
+                group("tab.body".localized()) {
                     HKTrendCard(metric: .weight, range: range, store: health)
                     HKTrendCard(metric: .bodyFat, range: range, store: health)
                 }
-                group("Ernährung") {
-                    TrendCard(title: "Kalorien", unit: "kcal", symbol: "fork.knife", tint: Theme.accent,
+                group("today.nutrition".localized()) {
+                    TrendCard(title: "nutrient.calories".localized(), unit: "kcal", symbol: "fork.knife", tint: Theme.accent,
                               higherIsBetter: nil, style: .bar, decimals: 0, series: kcalSeries, range: range)
-                    TrendCard(title: "Eiweiß", unit: "g", symbol: "fish.fill", tint: .pink,
+                    TrendCard(title: "nutrient.protein".localized(), unit: "g", symbol: "fish.fill", tint: .pink,
                               higherIsBetter: true, style: .bar, decimals: 0, series: proteinSeries, range: range)
-                    TrendCard(title: "Koffein", unit: "mg", symbol: "cup.and.saucer.fill", tint: .brown,
+                    TrendCard(title: "trends.caffeine".localized(), unit: "mg", symbol: "cup.and.saucer.fill", tint: .brown,
                               higherIsBetter: nil, style: .bar, decimals: 0, series: caffeineSeries, range: range)
                 }
             }
             .padding(16)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Trends")
+        .navigationTitle("today.trends".localized())
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -146,7 +147,7 @@ struct SleepTrendCard: View {
     @State private var series: [DayValue] = []
 
     var body: some View {
-        TrendCard(title: "Schlaf", unit: "h", symbol: "bed.double.fill", tint: .blue,
+        TrendCard(title: "recovery.sleep".localized(), unit: "h", symbol: "bed.double.fill", tint: .blue,
                   higherIsBetter: true, style: .bar, decimals: 1, series: series, range: range)
             .task(id: range) {
                 let nights = await store.sleepNightsDated(days: range.days * 2)
@@ -193,7 +194,7 @@ struct TrendCard: View {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(fmt(a)).font(.title2.weight(.bold)).monospacedDigit()
                     Text(unit).font(.caption).foregroundStyle(.secondary)
-                    Text("· Ø \(range.rawValue)").font(.caption).foregroundStyle(.tertiary)
+                    Text("· Ø \(range.label)").font(.caption).foregroundStyle(.tertiary)
                 }
                 chart(cur, baseline: a)
                     .frame(height: 90)
@@ -202,7 +203,7 @@ struct TrendCard: View {
                         .font(.caption2).foregroundStyle(.tertiary)
                 }
             } else {
-                Text("Keine Daten in diesem Zeitraum")
+                Text("trends.no_data".localized())
                     .font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 8)
             }
@@ -217,14 +218,14 @@ struct TrendCard: View {
         Chart {
             ForEach(data) { p in
                 if style == .bar {
-                    BarMark(x: .value("Tag", p.date, unit: .day), y: .value(unit, p.value))
+                    BarMark(x: .value("common.day".localized(), p.date, unit: .day), y: .value(unit, p.value))
                         .foregroundStyle(tint.opacity(0.85))
                 } else {
-                    AreaMark(x: .value("Tag", p.date, unit: .day), y: .value(unit, p.value))
+                    AreaMark(x: .value("common.day".localized(), p.date, unit: .day), y: .value(unit, p.value))
                         .foregroundStyle(tint.opacity(0.12)).interpolationMethod(.monotone)
-                    LineMark(x: .value("Tag", p.date, unit: .day), y: .value(unit, p.value))
+                    LineMark(x: .value("common.day".localized(), p.date, unit: .day), y: .value(unit, p.value))
                         .foregroundStyle(tint).interpolationMethod(.monotone)
-                    PointMark(x: .value("Tag", p.date, unit: .day), y: .value(unit, p.value))
+                    PointMark(x: .value("common.day".localized(), p.date, unit: .day), y: .value(unit, p.value))
                         .foregroundStyle(tint).symbolSize(18)
                 }
             }

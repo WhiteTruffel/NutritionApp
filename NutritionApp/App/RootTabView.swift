@@ -18,19 +18,25 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             OverviewView()
-                .tabItem { Label("Heute", systemImage: "flame.fill").accessibilityIdentifier("tab.heute") }
+                .tabItem { Label("tab.today".localized(), systemImage: "flame.fill").accessibilityIdentifier("tab.heute") }
 
             DiaryView()
-                .tabItem { Label("Tagebuch", systemImage: "book.fill").accessibilityIdentifier("tab.tagebuch") }
-
-            FluidsView()
-                .tabItem { Label("Trinken", systemImage: "drop.fill").accessibilityIdentifier("tab.trinken") }
+                .tabItem { Label("tab.diary".localized(), systemImage: "book.fill").accessibilityIdentifier("tab.tagebuch") }
 
             NutrientsView()
-                .tabItem { Label("Nährstoffe", systemImage: "leaf.fill").accessibilityIdentifier("tab.naehrstoffe") }
+                .tabItem { Label("tab.nutrients".localized(), systemImage: "leaf.fill").accessibilityIdentifier("tab.naehrstoffe") }
 
             BodyView()
-                .tabItem { Label("Körper", systemImage: "figure.run").accessibilityIdentifier("tab.koerper") }
+                .tabItem { Label("tab.body".localized(), systemImage: "figure.run").accessibilityIdentifier("tab.koerper") }
+
+            Group {
+                if let profile = profiles.first {
+                    GoalsView(profile: profile, embedded: true)
+                } else {
+                    NavigationStack { ContentUnavailableView("Profil wird geladen", systemImage: "person.crop.circle") }
+                }
+            }
+            .tabItem { Label("tab.more".localized(), systemImage: "gearshape.fill").accessibilityIdentifier("tab.mehr") }
         }
         .sheet(isPresented: $showWhatsNew) { WhatsNewView() }
         .fullScreenCover(isPresented: $showOnboarding) {

@@ -48,6 +48,7 @@ actor NutritionHealthStore {
         }
         if let dob = HKCharacteristicType.characteristicType(forIdentifier: .dateOfBirth) { read.insert(dob) }
         if let bioSex = HKCharacteristicType.characteristicType(forIdentifier: .biologicalSex) { read.insert(bioSex) }
+        if let fitz = HKCharacteristicType.characteristicType(forIdentifier: .fitzpatrickSkinType) { read.insert(fitz) }
         // Gewicht, Wasser und Koffein auch schreiben dürfen.
         for id in [HKQuantityTypeIdentifier.bodyMass, .dietaryWater, .dietaryCaffeine] {
             if let t = HKQuantityType.quantityType(forIdentifier: id) { share.insert(t); read.insert(t) }
@@ -251,6 +252,22 @@ actor NutritionHealthStore {
         data.bodyFatPercent = await latestValue(.bodyFatPercentage)
         data.leanBodyMassKg = await latestValue(.leanBodyMass)
         return data
+    }
+
+    /// Reads the Fitzpatrick skin type characteristic from Apple Health.
+    /// Returns nil if Health is unavailable or the user has not set it (notSet).
+    func readFitzpatrickSkinType() -> FitzpatrickSkinType? {
+        guard HKHealthStore.isHealthDataAvailable() else { return nil }
+        guard let obj = try? store.fitzpatrickSkinType() else { return nil }
+        switch obj.skinType {
+        case .I:   return .typeI
+        case .II:  return .typeII
+        case .III: return .typeIII
+        case .IV:  return .typeIV
+        case .V:   return .typeV
+        case .VI:  return .typeVI
+        default:   return nil
+        }
     }
 
     private func latestValue(_ id: HKQuantityTypeIdentifier) async -> Double? {

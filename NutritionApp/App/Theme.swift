@@ -1,5 +1,28 @@
 import SwiftUI
 
+/// App appearance preference (light, dark, or follow the system setting).
+enum AppearanceMode: String, CaseIterable, Identifiable {
+    case system, light, dark
+    var id: String { rawValue }
+    var displayName: String {
+        switch self {
+        case .system: return "System"
+        case .light:  return "Light"
+        case .dark:   return "Dark"
+        }
+    }
+    /// `nil` means follow the system setting; otherwise force the scheme.
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light:  return .light
+        case .dark:   return .dark
+        }
+    }
+    /// Shared @AppStorage key.
+    static let storageKey = "appearanceMode"
+}
+
 /// Zentrale Design-Tokens (Markenfarbe, Geometrie). Eine Akzentfarbe für die ganze App.
 enum Theme {
     /// Markenfarbe (Grün-Teal, passend zum App-Icon). Global via `.tint(Theme.accent)`.

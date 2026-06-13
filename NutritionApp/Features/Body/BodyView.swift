@@ -9,6 +9,7 @@ struct BodyView: View {
         case hrv = "HRV"
         case gewicht = "Gewicht"
         var id: String { rawValue }
+        var label: String { switch self { case .erholung: return "body.segment.recovery".localized(); case .hrv: return "HRV"; case .gewicht: return "body.segment.weight".localized() } }
     }
 
     @State private var segment: Segment = .erholung
@@ -25,8 +26,8 @@ struct BodyView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Picker("Ansicht", selection: $segment) {
-                        ForEach(Segment.allCases) { Text($0.rawValue).tag($0) }
+                    Picker("body.view".localized(), selection: $segment) {
+                        ForEach(Segment.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     .frame(width: 220)

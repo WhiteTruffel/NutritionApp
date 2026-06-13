@@ -49,9 +49,9 @@ struct NutrientsView: View {
             Group {
                 if dayEntries.isEmpty {
                     ContentUnavailableView(
-                        "Noch keine Einträge",
+                        "nutrients.empty_title".localized(),
                         systemImage: "leaf",
-                        description: Text("Erfasse Lebensmittel, um deine Nährwerte zu sehen."))
+                        description: Text("nutrients.empty_desc".localized()))
                 } else {
                     List {
                         mainSection
@@ -65,19 +65,19 @@ struct NutrientsView: View {
                             }
                             Section {
                                 let c = coverage
-                                Text("Mikronährstoff-Daten liegen für \(c.withData) von \(c.total) Einträgen vor – am vollständigsten bei USDA-Treffern.")
+                                Text("\("nutrients.coverage.prefix".localized()) \(c.withData) \("nutrients.coverage.mid".localized()) \(c.total) \("nutrients.coverage.suffix".localized())")
                                     .font(.caption).foregroundStyle(.secondary)
                             }
                         } else {
-                            Section("Vitamine & Mineralstoffe") {
-                                Text("Für die heutigen Einträge liegen keine Vitamin-/Mineralstoff-Werte vor. Tipp: Wähle in der Suche einen Treffer mit Quelle „USDA“ – diese liefern vollständige Mikronährstoffe.")
+                            Section("nutrients.section.vitamins".localized()) {
+                                Text("nutrients.no_micros".localized())
                                     .font(.caption).foregroundStyle(.secondary)
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("Nährstoffe")
+            .navigationTitle("tab.nutrients".localized())
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .top) { dateBar }
         }
@@ -87,18 +87,18 @@ struct NutrientsView: View {
 
     private var mainSection: some View {
         Section {
-            mainRow("Kalorien", kcalT, ref: 2000, unit: "kcal")
-            mainRow("Kohlenhydrate", carbsT, ref: 260, unit: "g")
-            mainRow("davon Zucker", sugarT, ref: 90, unit: "g", limit: true, indent: true)
-            mainRow("Ballaststoffe", fiberT, ref: 30, unit: "g")
-            mainRow("Eiweiß", proteinT, ref: 50, unit: "g")
-            mainRow("Fett", fatT, ref: 70, unit: "g")
-            mainRow("davon gesättigt", satFatT, ref: 20, unit: "g", limit: true, indent: true)
-            mainRow("Salz", saltT, ref: 6, unit: "g", limit: true)
+            mainRow("nutrient.calories".localized(), kcalT, ref: 2000, unit: "kcal")
+            mainRow("nutrient.carbs".localized(), carbsT, ref: 260, unit: "g")
+            mainRow("nutrient.sugar".localized(), sugarT, ref: 90, unit: "g", limit: true, indent: true)
+            mainRow("nutrient.fiber".localized(), fiberT, ref: 30, unit: "g")
+            mainRow("nutrient.protein".localized(), proteinT, ref: 50, unit: "g")
+            mainRow("nutrient.fat".localized(), fatT, ref: 70, unit: "g")
+            mainRow("nutrient.satfat_of".localized(), satFatT, ref: 20, unit: "g", limit: true, indent: true)
+            mainRow("nutrient.salt".localized(), saltT, ref: 6, unit: "g", limit: true)
         } header: {
-            Text("Hauptnährstoffe")
+            Text("nutrients.section.main".localized())
         } footer: {
-            Text("Referenzwerte: EU-Tagesreferenzmenge (2000 kcal). Zucker, gesättigte Fettsäuren und Salz sind Obergrenzen; Salz aus Natrium berechnet.")
+            Text("nutrients.reference".localized())
         }
     }
 
@@ -135,7 +135,7 @@ struct NutrientsView: View {
         let pct = def.rda > 0 ? min(value / def.rda, 1.0) : 0
         VStack(spacing: 4) {
             HStack {
-                Text(def.label).font(.subheadline)
+                Text(def.localizedLabel).font(.subheadline)
                 Spacer()
                 if value > 0 {
                     Text("\(format(value)) / \(format(def.rda)) \(def.unit)")
@@ -180,9 +180,9 @@ struct NutrientsView: View {
 
     private var dayLabel: String {
         let cal = Calendar.current
-        if cal.isDateInToday(selectedDay) { return "Heute" }
-        if cal.isDateInYesterday(selectedDay) { return "Gestern" }
-        return selectedDay.formatted(.dateTime.weekday(.wide).day().month(.abbreviated))
+        if cal.isDateInToday(selectedDay) { return "tab.today".localized() }
+        if cal.isDateInYesterday(selectedDay) { return "diary.yesterday".localized() }
+        return selectedDay.formatted(.dateTime.weekday(.wide).day().month(.abbreviated).locale(Locale(identifier: LocalizationManager.shared.currentLanguage.languageCode)))
     }
 
     private func shiftDay(_ delta: Int) {

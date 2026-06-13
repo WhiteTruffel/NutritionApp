@@ -35,14 +35,14 @@ struct ScanFlowView: View {
                     if BarcodeScanner.isSupported {
                         BarcodeScanner { code in handle(code) }
                     } else {
-                        ContentUnavailableView("Scanner nicht verfügbar",
+                        ContentUnavailableView("scan.unavailable".localized(),
                             systemImage: "barcode.viewfinder",
-                            description: Text("Auf diesem Gerät nicht möglich – bitte manuell erfassen."))
+                            description: Text("scan.unavailable_desc".localized()))
                     }
                 case .loading(let code):
                     ProgressView("Suche \(code) …")
                 case .parsingLabel:
-                    ProgressView("Etikett wird gelesen …")
+                    ProgressView("scan.reading_label".localized())
                 case .found(let food):
                     LogEntryView(scannedFood: food) { entry in
                         onSave(entry); dismiss()
@@ -59,7 +59,7 @@ struct ScanFlowView: View {
                     ContentUnavailableView {
                         Label("Keine Verbindung", systemImage: "wifi.exclamationmark")
                     } description: {
-                        Text("Die Lebensmittel-Datenbank ist gerade nicht erreichbar. Prüfe deine Internetverbindung und versuche es erneut.")
+                        Text("scan.db_unreachable".localized())
                     } actions: {
                         VStack(spacing: 12) {
                             Button {
@@ -69,7 +69,7 @@ struct ScanFlowView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.borderedProminent)
-                            Button("Werte selbst eingeben") { phase = .manual(code) }
+                            Button("scan.enter_manually".localized()) { phase = .manual(code) }
                                 .padding(.top, 4)
                         }
                         .padding(.horizontal, 24)
@@ -78,7 +78,7 @@ struct ScanFlowView: View {
                     ContentUnavailableView {
                         Label("Nicht gefunden", systemImage: "barcode.viewfinder")
                     } description: {
-                        Text("Barcode \(code) ist in keiner Datenbank. Fotografiere einfach das Nährwert-Etikett – die Werte werden automatisch erkannt. Beim nächsten Scan ist das Produkt sofort da.")
+                        Text(String(format: "scan.barcode_unknown".localized(), code))
                     } actions: {
                         VStack(spacing: 12) {
                             if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -93,20 +93,20 @@ struct ScanFlowView: View {
                             Button {
                                 activeCode = code; labelSource = .library
                             } label: {
-                                Label("Aus Fotos wählen", systemImage: "photo")
+                                Label("scan.choose_from_photos".localized(), systemImage: "photo")
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
-                            Button("Werte selbst eingeben") { phase = .manual(code) }
+                            Button("scan.enter_manually".localized()) { phase = .manual(code) }
                                 .padding(.top, 4)
                         }
                         .padding(.horizontal, 24)
                     }
                 }
             }
-            .navigationTitle("Scannen")
+            .navigationTitle("scan.title".localized())
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
             }
             .fullScreenCover(item: $labelSource, onDismiss: processPendingLabel) { source in
                 ImagePicker(

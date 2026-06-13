@@ -12,12 +12,12 @@ struct TrainingView: View {
         NavigationStack {
             List {
                 if loading {
-                    HStack { ProgressView(); Text("Lade Trainings …").foregroundStyle(.secondary) }
+                    HStack { ProgressView(); Text("training.loading".localized()).foregroundStyle(.secondary) }
                 } else if workouts.isEmpty {
                     ContentUnavailableView(
-                        "Keine Trainings",
+                        "training.no_workouts_title".localized(),
                         systemImage: "figure.run",
-                        description: Text("In den letzten 14 Tagen wurden keine Workouts in Apple Health gefunden."))
+                        description: Text("training.no_workouts_desc".localized()))
                 } else {
                     if let summary = weekSummary {
                         Section {
@@ -27,7 +27,7 @@ struct TrainingView: View {
                                 Text("\(summary) kcal").bold().foregroundStyle(.orange)
                             }
                         } footer: {
-                            Text("Summe der letzten 14 Tage.")
+                            Text("training.sum_14".localized())
                         }
                     }
                     ForEach(groupedDays, id: \.0) { day, items in
@@ -37,7 +37,7 @@ struct TrainingView: View {
                     }
                 }
             }
-            .navigationTitle("Training")
+            .navigationTitle("trends.training".localized())
             .refreshable { await load() }
             .task { await load() }
         }
@@ -105,8 +105,8 @@ struct TrainingView: View {
 
     private func dayLabel(_ day: Date) -> String {
         let cal = Calendar.current
-        if cal.isDateInToday(day) { return "Heute" }
-        if cal.isDateInYesterday(day) { return "Gestern" }
+        if cal.isDateInToday(day) { return "tab.today".localized() }
+        if cal.isDateInYesterday(day) { return "diary.yesterday".localized() }
         return day.formatted(.dateTime.weekday(.wide).day().month())
     }
 }

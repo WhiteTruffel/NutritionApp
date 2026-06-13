@@ -6,21 +6,28 @@ struct GoalsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Bindable var profile: UserProfile
+    var embedded: Bool = false
 
     private let health = NutritionHealthStore()
     @State private var importMessage: String?
     @AppStorage(GeminiFoodVision.apiKeyDefaultsKey) private var geminiKey: String = ""
     @AppStorage(USDAClient.apiKeyDefaultsKey) private var usdaKey: String = ""
+    @AppStorage(AppearanceMode.storageKey) private var appearanceRaw = AppearanceMode.system.rawValue
     @State private var showWhatsNew = false
+    @State private var reminders = RemindersSettings()
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var healthSkinType: FitzpatrickSkinType? = nil
+    @State private var healthFields: Set<String> = []
+    @State private var loc = LocalizationManager.shared
 
     private let rateOptions: [(Double, String)] = [
-        ( 0.50, "0,5 kg/Woche zunehmen"),
-        ( 0.25, "0,25 kg/Woche zunehmen"),
-        ( 0.00, "Gewicht halten"),
-        (-0.25, "0,25 kg/Woche abnehmen"),
-        (-0.50, "0,5 kg/Woche abnehmen"),
-        (-0.75, "0,75 kg/Woche abnehmen"),
-        (-1.00, "1 kg/Woche abnehmen")
+        ( 0.50, "goal.gain_0_5".localized()),
+        ( 0.25, "goal.gain_0_25".localized()),
+        ( 0.00, "goal.maintain".localized()),
+        (-0.25, "goal.lose_0_25".localized()),
+        (-0.50, "goal.lose_0_5".localized()),
+        (-0.75, "goal.lose_0_75".localized()),
+        (-1.00, "goal.lose_1_0".localized())
     ]
 
     private var customSum: Double { profile.customCarbPct + profile.customProteinPct + profile.customFatPct }
@@ -30,55 +37,82 @@ struct GoalsView: View {
             Form {
                 Section {
                     Button { importFromHealth() } label: {
-                        Label("Aus Apple Health übernehmen", systemImage: "heart.text.square")
+                        Label("settings.import_health".localized(), systemImage: "heart.text.square")
                     }
                     if let importMessage {
                         Text(importMessage).font(.caption).foregroundStyle(.secondary)
                     }
                 } footer: {
-                    Text("Liest Geschlecht, Alter, Größe, Gewicht und Körperfett (falls vorhanden).")
+                    Text("settings.import_health.footer".localized())
                 }
 
-                Section("Körperdaten") {
-                    Picker("Geschlecht", selection: $profile.sex) {
+                Section("settings.section.region_language".localized()) {
+                    Picker("settings.region".localized(), selection: Binding(
+                        get: { loc.currentRegion },
+                        set: { loc.currentRegion = $0 })) {
+                        ForEach(AppRegion.allCases) { Text($0.displayName).tag($0) }
+                    }
+                    Picker("settings.language".localized(), selection: Binding(
+                        get: { loc.currentLanguage },
+                        set: { loc.currentLanguage = $0 })) {
+                        ForEach(AppLanguage.allCases) { Text($0.displayName).tag($0) }
+                    }
+                }
+
+                Section("settings.section.bodydata".localized()) {
+                    Picker("settings.gender".localized(), selection: $profile.sex) {
                         ForEach(Sex.allCases) { Text($0.label).tag($0) }
                     }
-                    Stepper("Alter: \(profile.age)", value: $profile.age, in: 14...100)
-                    numberRow("Größe", value: $profile.heightCm, unit: "cm")
-                    numberRow("Gewicht", value: $profile.weightKg, unit: "kg")
-                    numberRow("Körperfett", value: bodyFatBinding, unit: "%")
+                    Stepper("\("settings.age".localized()): \(profile.age)", value: $profile.age, in: 14...100)
+                    bodyNumberRow("settings.height".localized(), value: $profile.heightCm, unit: "cm", key: "height")
+                    bodyNumberRow("settings.weight".localized(), value: $profile.weightKg, unit: "kg", key: "weight")
+                    bodyNumberRow("settings.bodyfat".localized(), value: bodyFatBinding, unit: "%", key: "bodyfat")
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Text("settings.skintype".localized())
+                            if healthSkinType != nil && healthSkinType == profile.skinType { healthBadge }
+                        }
+                        SkinTonePicker(selection: $profile.skinType)
+                        Text(profile.skinType.displayName).font(.caption.bold())
+                        if healthSkinType == nil, let url = URL(string: "x-apple-health://") {
+                            Link(destination: url) {
+                                Label("settings.skintype.health_empty".localized(), systemImage: "heart.text.square")
+                                    .font(.caption)
+                            }
+                        }
+                    }
                 }
 
                 Section {
-                    Picker("Aktivitätslevel", selection: $profile.activity) {
+                    Picker("settings.activity_level".localized(), selection: $profile.activity) {
                         ForEach(ActivityLevel.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.navigationLink)
                 } header: {
-                    Text("Aktivität")
+                    Text("settings.section.activity".localized())
                 } footer: {
-                    Text("Wähle deine Grundaktivität OHNE Training. Dein Sport wird separat aus Apple Health ergänzt – so wird nichts doppelt gezählt.")
+                    Text("settings.activity.footer".localized())
                 }
 
-                Section("Ziel") {
-                    Picker("Wochenziel", selection: $profile.weeklyRateKg) {
+                Section("settings.section.goal".localized()) {
+                    Picker("settings.weekly_goal".localized(), selection: $profile.weeklyRateKg) {
                         ForEach(rateOptions, id: \.0) { Text($0.1).tag($0.0) }
                     }
                     .pickerStyle(.navigationLink)
                 }
 
-                Section("Makronährstoffe") {
-                    Picker("Strategie", selection: $profile.macroStrategy) {
+                Section("settings.section.macros".localized()) {
+                    Picker("settings.strategy".localized(), selection: $profile.macroStrategy) {
                         ForEach(MacroStrategy.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.navigationLink)
 
                     if profile.macroStrategy == .custom {
-                        numberRow("Kohlenhydrate", value: $profile.customCarbPct, unit: "%")
-                        numberRow("Eiweiß", value: $profile.customProteinPct, unit: "%")
-                        numberRow("Fett", value: $profile.customFatPct, unit: "%")
+                        numberRow("nutrient.carbs".localized(), value: $profile.customCarbPct, unit: "%")
+                        numberRow("nutrient.protein".localized(), value: $profile.customProteinPct, unit: "%")
+                        numberRow("nutrient.fat".localized(), value: $profile.customFatPct, unit: "%")
                         HStack {
-                            Text("Summe")
+                            Text("settings.sum".localized())
                             Spacer()
                             Text("\(Int(customSum)) %")
                                 .foregroundStyle(abs(customSum - 100) < 0.5 ? Color.secondary : Color.red)
@@ -87,78 +121,78 @@ struct GoalsView: View {
                 }
 
                 Section {
-                    Toggle("Adaptiver Stoffwechsel (empfohlen)", isOn: $profile.useAdaptiveTDEE)
+                    Toggle("settings.adaptive".localized(), isOn: $profile.useAdaptiveTDEE)
                 } header: {
-                    Text("Stoffwechsel")
+                    Text("settings.section.metabolism".localized())
                 } footer: {
-                    Text("Goldstandard wie bei MacroFactor: Die App lernt deinen echten Umsatz aus Gewichtsverlauf + tatsächlicher Zufuhr und passt das Ziel laufend an – statt Sport-Kalorien zu addieren (die Tracker oft überschätzen). Braucht ~2 Wochen durchgehendes Logging + regelmäßige Gewichtseinträge. Der gelernte Wert erscheint dann auf „Heute“. Solange zu wenig Daten da sind, gilt das berechnete Ziel unten.")
+                    Text("settings.adaptive.footer".localized())
                 }
 
                 Section("Apple Health") {
-                    Toggle("Sport-Kalorien dazurechnen", isOn: $profile.useExerciseCalories)
+                    Toggle("settings.exercise_cals".localized(), isOn: $profile.useExerciseCalories)
                         .disabled(profile.useAdaptiveTDEE)
                     Text(profile.useAdaptiveTDEE
-                         ? "Im adaptiven Modus deaktiviert – dein Training ist über den Gewichtstrend bereits eingerechnet (kein Doppelzählen)."
-                         : "Dein Aktivitätslevel zählt nur die Grundaktivität – das Training kommt hierüber. Verbleibend = Ziel − Nahrung + aktive Kalorien aus Apple Health.")
+                         ? "settings.exercise_cals.footer_adaptive".localized()
+                         : "settings.exercise_cals.footer_normal".localized())
                         .font(.caption).foregroundStyle(.secondary)
                 }
 
-                Section("Dein Ziel") {
-                    resultRow("Kalorien", "\(Int(profile.kcalTarget)) kcal", emphasized: true)
-                    resultRow("Kohlenhydrate", "\(Int(profile.targets.carbsG)) g")
-                    resultRow("Eiweiß", "\(Int(profile.targets.proteinG)) g")
-                    resultRow("Fett", "\(Int(profile.targets.fatG)) g")
-                    resultRow("Grundumsatz (\(profile.bmrMethod))", "\(Int(profile.bmr.rounded())) kcal")
-                    resultRow("Gesamtumsatz (TDEE)", "\(Int(profile.tdee.rounded())) kcal")
+                Section("settings.section.your_goal".localized()) {
+                    resultRow("nutrient.calories".localized(), "\(Int(profile.kcalTarget)) kcal", emphasized: true)
+                    resultRow("nutrient.carbs".localized(), "\(Int(profile.targets.carbsG)) g")
+                    resultRow("nutrient.protein".localized(), "\(Int(profile.targets.proteinG)) g")
+                    resultRow("nutrient.fat".localized(), "\(Int(profile.targets.fatG)) g")
+                    resultRow("\("settings.bmr".localized()) (\(profile.bmrMethod))", "\(Int(profile.bmr.rounded())) kcal")
+                    resultRow("settings.tdee".localized(), "\(Int(profile.tdee.rounded())) kcal")
                     if profile.isFloored {
-                        Text("Hinweis: Dein Wunschdefizit liegt unter der Sicherheits-Untergrenze von \(Int(profile.kcalFloor)) kcal — das Ziel wurde dort gekappt.")
+                        Text("\("settings.floored.prefix".localized()) \(Int(profile.kcalFloor)) \("settings.floored.suffix".localized())")
                             .font(.caption).foregroundStyle(.orange)
                     }
                 }
 
                 Section {
-                    SecureField("Gemini API-Key einfügen", text: $geminiKey)
+                    SecureField("settings.gemini.placeholder".localized(), text: $geminiKey)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                     if !geminiKey.trimmingCharacters(in: .whitespaces).isEmpty {
-                        Label("KI-Erkennung aktiv", systemImage: "checkmark.seal.fill")
+                        Label("settings.gemini.active".localized(), systemImage: "checkmark.seal.fill")
                             .foregroundStyle(.green).font(.caption)
                     }
                     if let u = URL(string: "https://aistudio.google.com/app/apikey") {
                         Link(destination: u) {
-                            Label("Gemini-Key erstellen (aistudio.google.com)", systemImage: "safari").font(.caption)
+                            Label("settings.gemini.create".localized(), systemImage: "safari").font(.caption)
                         }
                     }
                 } header: {
-                    Text("KI-Bilderkennung (Gericht-Foto)")
+                    Text("settings.section.gemini".localized())
                 } footer: {
-                    Text("Optional. Mit einem kostenlosen Google-Gemini-Key erkennt „Gericht fotografieren“ echte Gerichte und schätzt Nährwerte. Ohne Key wird die einfache On-Device-Erkennung genutzt. Der Key bleibt lokal auf dem Gerät; das Foto wird zur Analyse an Google gesendet.")
+                    Text("settings.gemini.footer".localized())
                 }
 
                 Section {
-                    SecureField("USDA API-Key einfügen", text: $usdaKey)
+                    SecureField("settings.usda.placeholder".localized(), text: $usdaKey)
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                     if usdaKey.trimmingCharacters(in: .whitespaces).isEmpty {
-                        Label("Es wird DEMO_KEY genutzt (stark limitiert)", systemImage: "exclamationmark.triangle")
+                        Label("settings.usda.demo".localized(), systemImage: "exclamationmark.triangle")
                             .foregroundStyle(.orange).font(.caption)
                     } else {
-                        Label("Eigener USDA-Key aktiv", systemImage: "checkmark.seal.fill")
+                        Label("settings.usda.active".localized(), systemImage: "checkmark.seal.fill")
                             .foregroundStyle(.green).font(.caption)
                     }
                     if let u = URL(string: "https://fdc.nal.usda.gov/api-key-signup") {
                         Link(destination: u) {
-                            Label("USDA-Key erstellen (fdc.nal.usda.gov)", systemImage: "safari").font(.caption)
+                            Label("settings.usda.create".localized(), systemImage: "safari").font(.caption)
                         }
                     }
                 } header: {
-                    Text("Nährwert-Datenbank (USDA)")
+                    Text("settings.section.usda".localized())
                 } footer: {
-                    Text("Optional, aber empfohlen für vollständige Vitamin-/Mineralstoff-Daten. Kostenloser Key → ~1.000 Abfragen/Std. statt 30 mit dem Standard-DEMO_KEY. Bleibt lokal auf dem Gerät.")
+                    Text("settings.usda.footer".localized())
                 }
 
                 Section {
-                    DisclosureGroup("Anleitung: API-Schlüssel holen (kostenlos)") {
+                    DisclosureGroup("settings.apihelp.title".localized()) {
                         VStack(alignment: .leading, spacing: 10) {
                             keyGuide(
                                 title: "Gemini-Key (Gericht-Foto-KI)",
@@ -175,10 +209,27 @@ struct GoalsView: View {
                                         "Name + E-Mail eingeben, absenden",
                                         "Key kommt sofort per E-Mail",
                                         "Key kopieren und oben bei „Nährwert-Datenbank“ einfügen"])
-                            Text("Beide Schlüssel sind kostenlos, ohne Kreditkarte. Sie werden nur lokal auf diesem Gerät gespeichert.")
+                            Text("settings.keys_free_note".localized())
                                 .font(.caption2).foregroundStyle(.secondary)
                         }
                         .padding(.vertical, 4)
+                    }
+                }
+
+                Section("settings.section.appearance".localized()) {
+                    Picker("settings.appearance_mode".localized(), selection: $appearanceRaw) {
+                        ForEach(AppearanceMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Section("settings.section.reminders".localized()) {
+                    NavigationLink {
+                        RemindersSettingsView { reminders = $0 }
+                    } label: {
+                        Label("settings.configure_reminders".localized(), systemImage: "bell.badge")
                     }
                 }
 
@@ -186,30 +237,36 @@ struct GoalsView: View {
                     Button {
                         showWhatsNew = true
                     } label: {
-                        Label("Neu in dieser Version", systemImage: "sparkles")
+                        Label("settings.whatsnew".localized(), systemImage: "sparkles")
                     }
                     HStack {
-                        Text("Version")
+                        Text("settings.version".localized())
                         Spacer()
                         Text(Theme.appVersion).foregroundStyle(.secondary)
                     }
                 } header: {
-                    Text("Über die App")
+                    Text("settings.section.about".localized())
                 }
 
                 Section {
-                    Text("Schätzwerte nach etablierten Formeln, keine medizinische Beratung. Bei Erkrankungen, Schwangerschaft o. Ä. bitte fachlichen Rat einholen.")
+                    Text("settings.estimates_disclaimer".localized())
                         .font(.caption2).foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle("Ziele")
+            .navigationTitle(embedded ? "settings.title".localized() : "goals.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Fertig") { try? context.save(); dismiss() }
+                if !embedded {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Fertig") { try? context.save(); dismiss() }
+                    }
                 }
             }
             .sheet(isPresented: $showWhatsNew) { WhatsNewView() }
+            .task { loadSkinTypeFromHealth() }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { loadSkinTypeFromHealth() }
+            }
         }
     }
 
@@ -224,14 +281,52 @@ struct GoalsView: View {
         Task { @MainActor in
             try? await health.requestAuthorization()
             let d = await health.readBodyData()
-            if let s = d.sex { profile.sex = s }
-            if let a = d.age { profile.age = a }
-            if let h = d.heightCm { profile.heightCm = (h * 10).rounded() / 10 }
-            if let w = d.weightKg { profile.weightKg = (w * 10).rounded() / 10 }
-            if let bf = d.bodyFatPercent { profile.bodyFatPercent = (bf * 10).rounded() / 10 }
+            var fields: Set<String> = []
+            if let s = d.sex { profile.sex = s; fields.insert("sex") }
+            if let a = d.age { profile.age = a; fields.insert("age") }
+            if let h = d.heightCm { profile.heightCm = (h * 10).rounded() / 10; fields.insert("height") }
+            if let w = d.weightKg { profile.weightKg = (w * 10).rounded() / 10; fields.insert("weight") }
+            if let bf = d.bodyFatPercent { profile.bodyFatPercent = (bf * 10).rounded() / 10; fields.insert("bodyfat") }
+            if let st = await health.readFitzpatrickSkinType() { profile.skinType = st; healthSkinType = st }
+            healthFields = fields
             try? context.save()
             importMessage = d.hasAny ? "Werte aus Apple Health übernommen."
                                      : "Keine Körperdaten in Apple Health gefunden."
+        }
+    }
+
+    private func loadSkinTypeFromHealth() {
+        Task { @MainActor in
+            let t = await health.readFitzpatrickSkinType()
+            if let t {
+                healthSkinType = t
+                if profile.skinType != t { profile.skinType = t; try? context.save() }
+            } else {
+                healthSkinType = nil
+            }
+        }
+    }
+
+    private var healthBadge: some View {
+        Text("Apple Health")
+            .font(.caption2)
+            .foregroundStyle(.pink)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.pink.opacity(0.12), in: Capsule())
+    }
+
+    @ViewBuilder
+    private func bodyNumberRow(_ label: String, value: Binding<Double>, unit: String, key: String) -> some View {
+        HStack {
+            Text(label)
+            if healthFields.contains(key) { healthBadge }
+            Spacer()
+            TextField(unit, value: value, format: .number)
+                .keyboardType(.decimalPad)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 80)
+            Text(unit).foregroundStyle(.secondary)
         }
     }
 
@@ -247,7 +342,7 @@ struct GoalsView: View {
             }
             if let url = URL(string: urlString) {
                 Link(destination: url) {
-                    Label("Seite öffnen: \(urlString.replacingOccurrences(of: "https://", with: ""))",
+                    Label(String(format: "settings.open_page".localized(), urlString.replacingOccurrences(of: "https://", with: "")),
                           systemImage: "safari")
                         .font(.caption)
                 }

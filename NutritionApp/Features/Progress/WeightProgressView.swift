@@ -22,9 +22,9 @@ struct WeightProgressView: View {
         ScrollView {
                 VStack(spacing: 16) {
                     if entries.isEmpty {
-                        ContentUnavailableView("Noch keine Gewichtsdaten",
+                        ContentUnavailableView("weight.empty_title".localized(),
                             systemImage: "scalemass",
-                            description: Text("Tippe oben rechts auf +, um dein Gewicht einzutragen."))
+                            description: Text("weight.empty_desc".localized()))
                             .padding(.top, 60)
                     } else {
                         summaryCard
@@ -53,14 +53,14 @@ struct WeightProgressView: View {
     private var summaryCard: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Aktuell").font(.caption).foregroundStyle(.secondary)
+                Text("weight.current".localized()).font(.caption).foregroundStyle(.secondary)
                 Text("\(latest.map { String(format: "%.1f", $0.weightKg) } ?? "–") kg")
                     .font(.title2.bold())
             }
             Spacer()
             if let change {
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Veränderung").font(.caption).foregroundStyle(.secondary)
+                    Text("weight.change".localized()).font(.caption).foregroundStyle(.secondary)
                     Text("\(change >= 0 ? "+" : "")\(String(format: "%.1f", change)) kg")
                         .font(.title3.bold())
                         .foregroundStyle(change <= 0 ? .green : .orange)
@@ -74,13 +74,13 @@ struct WeightProgressView: View {
 
     private var chartCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Verlauf").font(.headline)
+            Text("weight.history".localized()).font(.headline)
             Chart(entries) { entry in
-                LineMark(x: .value("Datum", entry.date),
-                         y: .value("Gewicht", entry.weightKg))
+                LineMark(x: .value("common.date".localized(), entry.date),
+                         y: .value("settings.weight".localized(), entry.weightKg))
                     .interpolationMethod(.catmullRom)
-                PointMark(x: .value("Datum", entry.date),
-                          y: .value("Gewicht", entry.weightKg))
+                PointMark(x: .value("common.date".localized(), entry.date),
+                          y: .value("settings.weight".localized(), entry.weightKg))
             }
             .chartYScale(domain: .automatic(includesZero: false))
             .frame(height: 220)
@@ -109,14 +109,14 @@ struct WeightProgressView: View {
         let water = lean.map { $0 * 0.73 }   // fettfreie Masse ist ~73 % Wasser
 
         var tiles: [(String, String, String, Color)] = []
-        if let bf { tiles.append(("Körperfett", String(format: "%.1f %%", bf), "drop.triangle.fill", .orange)) }
-        if let fatMass { tiles.append(("Fettmasse", String(format: "%.1f kg", fatMass), "scalemass.fill", .orange)) }
-        if let lean { tiles.append(("Muskel/Magermasse", String(format: "%.1f kg", lean), "figure.strengthtraining.traditional", .blue)) }
-        if let water { tiles.append(("Körperwasser ≈", String(format: "%.1f kg", water), "drop.fill", .teal)) }
+        if let bf { tiles.append(("settings.bodyfat".localized(), String(format: "%.1f %%", bf), "drop.triangle.fill", .orange)) }
+        if let fatMass { tiles.append(("weight.fatmass".localized(), String(format: "%.1f kg", fatMass), "scalemass.fill", .orange)) }
+        if let lean { tiles.append(("weight.leanmass".localized(), String(format: "%.1f kg", lean), "figure.strengthtraining.traditional", .blue)) }
+        if let water { tiles.append(("weight.bodywater".localized(), String(format: "%.1f kg", water), "drop.fill", .teal)) }
         if let bmi { tiles.append(("BMI", String(format: "%.1f", bmi), "ruler.fill", .secondary)) }
 
         return VStack(alignment: .leading, spacing: 12) {
-            Text("Körperzusammensetzung").font(.headline)
+            Text("weight.composition".localized()).font(.headline)
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 ForEach(tiles, id: \.0) { t in
                     HStack(spacing: 10) {
@@ -131,7 +131,7 @@ struct WeightProgressView: View {
                     .background(Color(.tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                 }
             }
-            Text("Aus Apple Health – Körperwasser geschätzt aus der Magermasse. Werte stammen z. B. von einer smarten Waage.")
+            Text("weight.composition_note".localized())
                 .font(.caption2).foregroundStyle(.secondary)
         }
         .padding(20)
@@ -144,7 +144,7 @@ struct WeightProgressView: View {
     private var historyCard: some View {
         let recent = Array(entries.suffix(40))   // jüngste 40, chronologisch
         return VStack(alignment: .leading, spacing: 0) {
-            Text("Einträge").font(.headline).padding(.bottom, 8)
+            Text("weight.entries".localized()).font(.headline).padding(.bottom, 8)
             ForEach(recent.indices.reversed(), id: \.self) { i in
                 let e = recent[i]
                 let delta = i > 0 ? e.weightKg - recent[i - 1].weightKg : nil
@@ -202,7 +202,7 @@ private struct LogWeightView: View {
         NavigationStack {
             Form {
                 HStack {
-                    Text("Gewicht")
+                    Text("settings.weight".localized())
                     Spacer()
                     TextField("kg", value: $kg, format: .number)
                         .keyboardType(.decimalPad)
@@ -210,14 +210,14 @@ private struct LogWeightView: View {
                         .frame(width: 90)
                     Text("kg").foregroundStyle(.secondary)
                 }
-                DatePicker("Datum", selection: $date, displayedComponents: .date)
+                DatePicker("common.date".localized(), selection: $date, displayedComponents: .date)
             }
-            .navigationTitle("Gewicht eintragen")
+            .navigationTitle("weight.add_title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Sichern") { onSave(kg, date); dismiss() }.disabled(kg <= 0)
+                    Button("common.save".localized()) { onSave(kg, date); dismiss() }.disabled(kg <= 0)
                 }
             }
         }

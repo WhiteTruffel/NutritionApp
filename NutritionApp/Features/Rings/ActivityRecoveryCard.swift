@@ -7,30 +7,30 @@ struct ActivityRecoveryCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Aktivität & Erholung").font(.headline)
+            Text("activity_recovery.title".localized()).font(.headline)
 
             if rings == nil && readiness == nil {
-                Text("Noch keine Apple-Health-Daten – Aktivitäts- und Erholungswerte kommen von der Apple Watch.")
+                Text("activity_recovery.empty".localized())
                     .font(.caption).foregroundStyle(.secondary)
             }
 
             HStack(spacing: 28) {
                 VStack(spacing: 6) {
                     ActivityRingsView(rings: rings).frame(width: 92, height: 92)
-                    Text("Aktivität").font(.caption2).foregroundStyle(.secondary)
+                    Text("settings.section.activity".localized()).font(.caption2).foregroundStyle(.secondary)
                 }
                 VStack(spacing: 6) {
                     ReadinessRingView(score: readiness?.score).frame(width: 92, height: 92)
-                    Text("Erholung").font(.caption2).foregroundStyle(.secondary)
+                    Text("today.recovery".localized()).font(.caption2).foregroundStyle(.secondary)
                 }
                 Spacer()
             }
 
             if let r = rings {
                 VStack(spacing: 6) {
-                    legendRow("Bewegung", "\(Int(r.moveKcal)) / \(Int(r.moveGoal)) kcal", .red)
-                    legendRow("Training", "\(Int(r.exerciseMin)) / \(Int(r.exerciseGoal)) min", .green)
-                    legendRow("Stehen",   "\(Int(r.standHours)) / \(Int(r.standGoal)) h", .blue)
+                    legendRow("load.movement".localized(), "\(Int(r.moveKcal)) / \(Int(r.moveGoal)) kcal", .red)
+                    legendRow("trends.training".localized(), "\(Int(r.exerciseMin)) / \(Int(r.exerciseGoal)) min", .green)
+                    legendRow("activity.stand".localized(),   "\(Int(r.standHours)) / \(Int(r.standGoal)) h", .blue)
                 }
             }
 
@@ -38,7 +38,7 @@ struct ActivityRecoveryCard: View {
                 Divider()
                 HStack(spacing: 14) {
                     if let h = rd.hrv { metric("\(Int(h)) ms", "HRV") }
-                    if let p = rd.rhr { metric("\(Int(p)) bpm", "Ruhepuls") }
+                    if let p = rd.rhr { metric("\(Int(p)) bpm", "recovery.rhr".localized()) }
                     if let s = rd.sleepHours { metric(String(format: "%.1f h", s), "Schlaf") }
                     Spacer()
                 }

@@ -14,27 +14,27 @@ struct OnboardingView: View {
         VStack(spacing: 0) {
             HStack {
                 Spacer()
-                Button("Überspringen") { onDone() }
+                Button("onboarding.skip".localized()) { onDone() }
                     .font(.subheadline).foregroundStyle(.secondary).padding()
             }
 
             TabView(selection: $page) {
-                slide(symbol: "leaf.fill", tint: Theme.accent, title: "Willkommen",
-                      text: "Dein Tracker für Ernährung, Trinken und Erholung – einfach, schnell, mit Apple Health verbunden.")
+                slide(symbol: "leaf.fill", tint: Theme.accent, title: "onboarding.welcome".localized(),
+                      text: "onboarding.welcome_text".localized())
                     .tag(0)
 
                 featureSlide.tag(1)
 
                 healthSlide.tag(2)
 
-                slide(symbol: "checkmark.seal.fill", tint: .green, title: "Bereit",
-                      text: "Lege direkt los – deine Ziele kannst du jederzeit unter Heute › Zahnrad anpassen. Viel Erfolg!")
+                slide(symbol: "checkmark.seal.fill", tint: .green, title: "onboarding.ready".localized(),
+                      text: "onboarding.ready_text".localized())
                     .tag(3)
             }
             .tabViewStyle(.page)
             .indexViewStyle(.page(backgroundDisplayMode: .always))
 
-            Button(page < 3 ? "Weiter" : "Los geht's") {
+            Button(page < 3 ? "common.next".localized() : "whatsnew.lets_go".localized()) {
                 if page < 3 { withAnimation { page += 1 } } else { onDone() }
             }
             .font(.headline)
@@ -62,12 +62,12 @@ struct OnboardingView: View {
     private var featureSlide: some View {
         VStack(spacing: 22) {
             Spacer()
-            Text("Das kannst du").font(.title.weight(.bold))
+            Text("onboarding.features_title".localized()).font(.title.weight(.bold))
             VStack(alignment: .leading, spacing: 16) {
-                featureRow("barcode.viewfinder", "Scannen & suchen", "Barcode, Foto oder Texteingabe – Nährwerte automatisch.")
-                featureRow("drop.fill", "Trinken & Koffein", "Wasser und Koffein mit Pacing und Schlaf-Schwelle.")
-                featureRow("bed.double.fill", "Erholung & Belastung", "Schlaf, Ruhepuls, Training – aus Apple Health.")
-                featureRow("chart.xyaxis.line", "Trends", "Ruhepuls, Schritte, Gewicht & Co. über Zeit.")
+                featureRow("barcode.viewfinder", "onboarding.feat_scan_title".localized(), "onboarding.feat_scan_sub".localized())
+                featureRow("drop.fill", "onboarding.feat_drink_title".localized(), "onboarding.feat_drink_sub".localized())
+                featureRow("bed.double.fill", "onboarding.feat_recovery_title".localized(), "onboarding.feat_recovery_sub".localized())
+                featureRow("chart.xyaxis.line", "onboarding.feat_trends_title".localized(), "onboarding.feat_trends_sub".localized())
             }
             .padding(.horizontal, 28)
             Spacer(); Spacer()
@@ -89,15 +89,15 @@ struct OnboardingView: View {
         VStack(spacing: 20) {
             Spacer()
             Image(systemName: "heart.text.square.fill").font(.system(size: 64)).foregroundStyle(.red)
-            Text("Mit Apple Health verbinden").font(.title2.weight(.bold))
-            Text("So fließen Schritte, Training, Schlaf, Ruhepuls und Gewicht automatisch ein – und deine Mahlzeiten landen umgekehrt in Health. Du entscheidest im nächsten Dialog, was du freigibst.")
+            Text("onboarding.health_connect".localized()).font(.title2.weight(.bold))
+            Text("onboarding.health_text".localized())
                 .font(.callout).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center).padding(.horizontal, 28)
             Button {
                 healthRequested = true
                 Task { try? await health.requestAuthorization() }
             } label: {
-                Label(healthRequested ? "Health-Dialog geöffnet" : "Mit Apple Health verbinden",
+                Label(healthRequested ? "onboarding.health_opened".localized() : "onboarding.health_connect".localized(),
                       systemImage: healthRequested ? "checkmark" : "heart.fill")
             }
             .buttonStyle(.bordered)

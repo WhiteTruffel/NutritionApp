@@ -74,7 +74,7 @@ struct DashboardView: View {
                         WeeklyReviewView()
                     } label: {
                         HStack {
-                            Label("Wochenrückblick & Insights", systemImage: "chart.bar.xaxis")
+                            Label("dashboard.weekly_insights".localized(), systemImage: "chart.bar.xaxis")
                                 .font(.subheadline.weight(.medium))
                             Spacer()
                             Image(systemName: "chevron.right").font(.footnote).foregroundStyle(.tertiary)
@@ -88,7 +88,7 @@ struct DashboardView: View {
                 .padding(16)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Ernährung")
+            .navigationTitle("today.nutrition".localized())
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showGoals = true } label: { Image(systemName: "gearshape.fill") }
@@ -163,24 +163,24 @@ private struct HeroCard: View {
                             .font(.system(size: 34, weight: .bold, design: .rounded))
                             .foregroundStyle(remaining < 0 ? .red : .primary)
                             .contentTransition(.numericText())
-                        Text("kcal übrig").font(.caption2).foregroundStyle(.secondary)
+                        Text("today.kcal_left".localized()).font(.caption2).foregroundStyle(.secondary)
                     }
                 }
                 .frame(width: 140, height: 140)
 
                 VStack(alignment: .leading, spacing: 14) {
-                    miniStat("Ziel", Int(goal), .secondary)
-                    miniStat("Nahrung", Int(consumed.rounded()), Theme.accent)
-                    if exercise > 0 { miniStat("Sport", Int(exercise.rounded()), .orange, plus: true) }
+                    miniStat("settings.section.goal".localized(), Int(goal), .secondary)
+                    miniStat("dashboard.food".localized(), Int(consumed.rounded()), Theme.accent)
+                    if exercise > 0 { miniStat("dashboard.sport".localized(), Int(exercise.rounded()), .orange, plus: true) }
                 }
             }
 
             Divider()
 
             HStack(spacing: 12) {
-                MacroRing(title: "Kohlenh.", consumed: totals.carbsG, target: targets.carbsG, color: .orange)
-                MacroRing(title: "Eiweiß", consumed: totals.proteinG, target: targets.proteinG, color: Theme.accent)
-                MacroRing(title: "Fett", consumed: totals.fatG, target: targets.fatG, color: .yellow)
+                MacroRing(title: "dashboard.carbs_short".localized(), consumed: totals.carbsG, target: targets.carbsG, color: .orange)
+                MacroRing(title: "nutrient.protein".localized(), consumed: totals.proteinG, target: targets.proteinG, color: Theme.accent)
+                MacroRing(title: "nutrient.fat".localized(), consumed: totals.fatG, target: targets.fatG, color: .yellow)
             }
         }
         .padding(Theme.cardPadding)
@@ -243,7 +243,7 @@ private struct CalorieSummaryCard: View {
                             .font(.system(size: 30, weight: .bold, design: .rounded))
                             .foregroundStyle(remaining < 0 ? .red : .primary)
                             .contentTransition(.numericText())
-                        Text("übrig")
+                        Text("dashboard.left".localized())
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -251,13 +251,13 @@ private struct CalorieSummaryCard: View {
                 .frame(width: 130, height: 130)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    StatRow(label: "Ziel", value: "\(Int(goal)) kcal", color: .secondary)
-                    StatRow(label: "Nahrung", value: "\(Int(consumed.rounded())) kcal", color: Theme.accent)
+                    StatRow(label: "settings.section.goal".localized(), value: "\(Int(goal)) kcal", color: .secondary)
+                    StatRow(label: "dashboard.food".localized(), value: "\(Int(consumed.rounded())) kcal", color: Theme.accent)
                     if exercise > 0 {
-                        StatRow(label: "Sport", value: "+\(Int(exercise.rounded())) kcal", color: .orange)
+                        StatRow(label: "dashboard.sport".localized(), value: "+\(Int(exercise.rounded())) kcal", color: .orange)
                     }
                     Divider()
-                    StatRow(label: "Verbleibend",
+                    StatRow(label: "dashboard.remaining".localized(),
                             value: "\(Int(remaining.rounded())) kcal",
                             color: remaining < 0 ? .red : .primary,
                             emphasized: true)
@@ -319,11 +319,11 @@ private struct MacroSummaryCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Makronährstoffe")
+            Text("settings.section.macros".localized())
                 .font(.headline)
-            MacroBar(title: "Kohlenhydrate", consumed: totals.carbsG, target: targets.carbsG, color: .orange)
-            MacroBar(title: "Eiweiß",        consumed: totals.proteinG, target: targets.proteinG, color: .blue)
-            MacroBar(title: "Fett",          consumed: totals.fatG, target: targets.fatG, color: .yellow)
+            MacroBar(title: "nutrient.carbs".localized(), consumed: totals.carbsG, target: targets.carbsG, color: .orange)
+            MacroBar(title: "nutrient.protein".localized(),        consumed: totals.proteinG, target: targets.proteinG, color: .blue)
+            MacroBar(title: "nutrient.fat".localized(),          consumed: totals.fatG, target: targets.fatG, color: .yellow)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -373,7 +373,7 @@ private struct IntakeCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Wasser & Koffein").font(.headline)
+            Text("dashboard.water_caffeine".localized()).font(.headline)
 
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -407,7 +407,7 @@ private struct IntakeCard: View {
                 Spacer()
                 Text("\(Int(caffeine)) mg")
                     .font(.subheadline).foregroundStyle(.secondary).monospacedDigit()
-                Button("+ Kaffee") { onAdd(.caffeine, 95) }
+                Button("dashboard.add_coffee".localized()) { onAdd(.caffeine, 95) }
                     .buttonStyle(.bordered)
                     .font(.footnote)
                     .accessibilityIdentifier("dashboard.addKaffee")

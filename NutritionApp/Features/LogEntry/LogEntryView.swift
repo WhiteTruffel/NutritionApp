@@ -29,9 +29,9 @@ struct LogEntryView: View {
     private var isEditing: Bool { editingEntry != nil }
 
     private var navTitle: String {
-        if isEditing { return "Eintrag bearbeiten" }
-        if prefillNutrients != nil { return "Etikett prüfen" }
-        return scannedFood == nil ? "Manuell erfassen" : "Erfassen"
+        if isEditing { return "log.edit_title".localized() }
+        if prefillNutrients != nil { return "log.check_label".localized() }
+        return scannedFood == nil ? "log.manual".localized() : "log.capture".localized()
     }
 
     /// Erfassen/Scan. `presetMeal` belegt die Mahlzeit vor; `presetBarcode` setzt bei manueller
@@ -76,7 +76,7 @@ struct LogEntryView: View {
 
     /// Label der freien Gramm-Eingabe – als eigene „Portion" wählbar; dann tippt der
     /// Nutzer die Menge direkt in Gramm ein (z. B. 5, 24, 120) ohne Hausmaß/Stepper.
-    private let gramOptionLabel = "Gramm (frei eingeben)"
+    private let gramOptionLabel = "log.grams_free".localized()
     private var isGramMode: Bool { servingLabel == gramOptionLabel }
 
     private var servings: [Serving] {
@@ -91,7 +91,7 @@ struct LogEntryView: View {
         }
         // KI-geschätzte ganze Portion ganz oben anbieten und damit als Default vorwählen.
         if let g = scannedFood?.aiPortionGrams, g > 0 {
-            let base = (scannedFood?.aiPortionLabel?.isEmpty == false) ? scannedFood!.aiPortionLabel! : "1 Portion"
+            let base = (scannedFood?.aiPortionLabel?.isEmpty == false) ? scannedFood!.aiPortionLabel! : "log.one_portion".localized()
             list.insert(Serving(label: "\(base) (≈ \(Int(g.rounded())) g)", grams: g), at: 0)
         }
         // Freie Gramm-Eingabe immer als letzte Option anbieten.
@@ -102,34 +102,34 @@ struct LogEntryView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Lebensmittel") {
-                    if scannedFood == nil { TextField("Name", text: $name) }
+                Section("log.food".localized()) {
+                    if scannedFood == nil { TextField("common.name".localized(), text: $name) }
                     else { Text(name).foregroundStyle(.secondary) }
-                    Picker("Mahlzeit", selection: $mealType) {
+                    Picker("log.meal".localized(), selection: $mealType) {
                         ForEach(MealType.allCases) { Text($0.label).tag($0) }
                     }
-                    DatePicker("Zeitpunkt", selection: $date, in: ...Date(),
+                    DatePicker("log.time_point".localized(), selection: $date, in: ...Date(),
                                displayedComponents: [.date, .hourAndMinute])
                 }
 
-                Section("Portion") {
-                    Picker("Portion", selection: $servingLabel) {
+                Section("log.portion".localized()) {
+                    Picker("log.portion".localized(), selection: $servingLabel) {
                         ForEach(servings) { Text($0.label).tag($0.label) }
                     }
                     .onChange(of: servingLabel) { _, _ in recomputeGrams() }
                     // Im Gramm-Modus kein Hausmaß-Stepper – die Menge wird direkt getippt.
                     if !isGramMode {
                         Stepper(value: $count, in: 0.5...20, step: 0.5) {
-                            HStack { Text("Anzahl"); Spacer()
+                            HStack { Text("log.count".localized()); Spacer()
                                 Text(count == count.rounded() ? "\(Int(count))" : String(format: "%.1f", count))
                                     .foregroundStyle(.secondary) }
                         }
                         .onChange(of: count) { _, _ in recomputeGrams() }
                     }
                     HStack {
-                        Text(isGramMode ? "Menge (g)" : "Menge gesamt")
+                        Text(isGramMode ? "log.amount_g".localized() : "log.amount_total".localized())
                         Spacer()
-                        TextField("z. B. 120", value: $grams, format: .number)
+                        TextField("log.placeholder_120".localized(), value: $grams, format: .number)
                             .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 90)
                         Text("g/ml").foregroundStyle(.secondary)
                     }
@@ -137,35 +137,35 @@ struct LogEntryView: View {
 
                 if scannedFood == nil {
                     Section {
-                        nutrientField("Kalorien (kcal)", $kcal)
-                        nutrientField("Eiweiß (g)", $protein)
-                        nutrientField("Kohlenhydrate (g)", $carbs)
-                        nutrientField("Fett (g)", $fat)
+                        nutrientField("log.kcal_field".localized(), $kcal)
+                        nutrientField("log.protein_field".localized(), $protein)
+                        nutrientField("log.carbs_field".localized(), $carbs)
+                        nutrientField("log.fat_field".localized(), $fat)
                     } header: {
-                        Text("Nährwerte pro 100 g")
+                        Text("log.per100g".localized())
                     } footer: {
                         if prefillNutrients != nil {
-                            Label("Aus dem Etikett-Foto erkannt – bitte kurz prüfen und ggf. korrigieren.",
+                            Label("log.label_detected".localized(),
                                   systemImage: "text.viewfinder")
                                 .font(.caption)
                         }
                     }
                 } else {
                     // Foto/Scan: Nährwerte für die gewählte Menge anzeigen (read-only).
-                    Section("Nährwerte für diese Menge") {
-                        readout("Kalorien", scaled(scannedFood?.kcalPer100g), "kcal")
-                        readout("Eiweiß", scaled(scannedFood?.proteinPer100g), "g")
-                        readout("Kohlenhydrate", scaled(scannedFood?.carbsPer100g), "g")
-                        readout("Fett", scaled(scannedFood?.fatPer100g), "g")
+                    Section("log.nutrients_amount".localized()) {
+                        readout("nutrient.calories".localized(), scaled(scannedFood?.kcalPer100g), "kcal")
+                        readout("nutrient.protein".localized(), scaled(scannedFood?.proteinPer100g), "g")
+                        readout("nutrient.carbs".localized(), scaled(scannedFood?.carbsPer100g), "g")
+                        readout("nutrient.fat".localized(), scaled(scannedFood?.fatPer100g), "g")
                     }
                 }
             }
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(isEditing ? "Übernehmen" : "Sichern") { save() }
+                    Button(isEditing ? "log.apply".localized() : "common.save".localized()) { save() }
                         .disabled((scannedFood == nil && name.isEmpty) || grams <= 0)
                 }
             }

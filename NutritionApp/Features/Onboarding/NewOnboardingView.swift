@@ -1,18 +1,22 @@
 import SwiftUI
 import SwiftData
+import HealthKit
 
 struct NewOnboardingView: View {
     @Environment(\.modelContext) var modelContext
     let onDone: () -> Void
 
+    private let healthStore = NutritionHealthStore()
+
     @State private var currentStep = 0
-    @State private var selectedRegion: AppRegion = .germany
-    @State private var selectedLanguage: AppLanguage = .german
+    @State private var selectedRegion: AppRegion = .usa
+    @State private var selectedLanguage: AppLanguage = .english
     @State private var selectedFormat: UnitSystem = .metric
     @State private var selectedGender: Gender = .male
     @State private var height: String = "180"
     @State private var age: String = "30"
     @State private var selectedSkinType: FitzpatrickSkinType = .typeII
+    @State private var isLoadingHealthData = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -54,6 +58,33 @@ struct NewOnboardingView: View {
             }
             .padding(20)
         }
+        .task {
+            await loadHealthKitData()
+        }
+    }
+
+    private func loadHealthKitData() async {
+        isLoadingHealthData = true
+        // Request authorization first, THEN read. Otherwise a brand new user sees the
+        // defaults (Male/180/30) because the read fires before the permission dialog is
+        // answered on the very first launch (Bug 2: first-launch HealthKit race).
+        try? await healthStore.requestAuthorization()
+        let bodyData = await healthStore.readBodyData()
+
+        if let age = bodyData.age {
+            self.age = String(age)
+        }
+        if let height = bodyData.heightCm {
+            self.height = String(Int(height))
+        }
+        if let sex = bodyData.sex {
+            self.selectedGender = (sex == .male) ? .male : .female
+        }
+        if let skin = await healthStore.readFitzpatrickSkinType() {
+            self.selectedSkinType = skin
+        }
+
+        isLoadingHealthData = false
     }
 
     // MARK: - Screens
@@ -65,7 +96,7 @@ struct NewOnboardingView: View {
 
             Picker("Region", selection: $selectedRegion) {
                 ForEach(AppRegion.allCases) { region in
-                    Text(region.displayName).tag(region)
+                    Text("\(flagForRegion(region)) \(region.displayName)").tag(region)
                 }
             }
             .pickerStyle(.wheel)
@@ -77,7 +108,7 @@ struct NewOnboardingView: View {
 
             Picker("Language", selection: $selectedLanguage) {
                 ForEach(AppLanguage.allCases) { lang in
-                    Text(lang.displayName).tag(lang)
+                    Text("\(flagForLanguage(lang)) \(lang.displayName)").tag(lang)
                 }
             }
             .pickerStyle(.wheel)
@@ -86,6 +117,74 @@ struct NewOnboardingView: View {
             Spacer()
         }
         .padding(20)
+    }
+
+    private func flagForRegion(_ region: AppRegion) -> String {
+        switch region {
+        case .germany: return "🇩🇪"
+        case .austria: return "🇦🇹"
+        case .switzerlandDE, .switzerlandFR, .switzerlandIT: return "🇨🇭"
+        case .france: return "🇫🇷"
+        case .usa: return "🇺🇸"
+        case .canada: return "🇨🇦"
+        case .uk: return "🇬🇧"
+        case .australia: return "🇦🇺"
+        case .india: return "🇮🇳"
+        case .farsi: return "🇮🇷"
+        case .arabic: return "🇸🇦"
+        case .japan: return "🇯🇵"
+        case .china: return "🇨🇳"
+        case .serbia: return "🇷🇸"
+        case .croatia: return "🇭🇷"
+        case .russia: return "🇷🇺"
+        case .hungary: return "🇭🇺"
+        case .italy: return "🇮🇹"
+        case .spain: return "🇪🇸"
+        case .portugal: return "🇵🇹"
+        case .brazil: return "🇧🇷"
+        }
+    }
+
+    private func flagForLanguage(_ language: AppLanguage) -> String {
+        switch language {
+        case .english: return "🇬🇧"
+        case .german: return "🇩🇪"
+        case .french: return "🇫🇷"
+        case .frenchSwiss: return "🇨🇭"
+        case .frenchCanadian: return "🇨🇦"
+        case .afrikaans: return "🇿🇦"
+        case .hindi: return "🇮🇳"
+        case .farsi: return "🇮🇷"
+        case .arabic: return "🇸🇦"
+        case .japanese: return "🇯🇵"
+        case .chinese: return "🇨🇳"
+        case .serbian: return "🇷🇸"
+        case .serbianLatin: return "🇷🇸"
+        case .croatian: return "🇭🇷"
+        case .russian: return "🇷🇺"
+        case .hungarian: return "🇭🇺"
+        case .italian: return "🇮🇹"
+        case .spanish: return "🇪🇸"
+        case .portuguese: return "🇵🇹"
+        case .brazilianPortuguese: return "🇧🇷"
+        case .korean: return "🇰🇷"
+        case .polish: return "🇵🇱"
+        case .norwegian: return "🇳🇴"
+        case .finnish: return "🇫🇮"
+        case .swedish: return "🇸🇪"
+        case .danish: return "🇩🇰"
+        case .czech: return "🇨🇿"
+        case .slovak: return "🇸🇰"
+        case .romanian: return "🇷🇴"
+        case .bulgarian: return "🇧🇬"
+        case .turkish: return "🇹🇷"
+        case .greek: return "🇬🇷"
+        case .swahili: return "🇹🇿"
+        case .oshiwambo: return "🇳🇦"
+        case .khoekhoe: return "🇳🇦"
+        case .herero: return "🇳🇦"
+        case .silozi: return "🇳🇦"
+        }
     }
 
     private var screen2PersonalData: some View {
@@ -144,11 +243,9 @@ struct NewOnboardingView: View {
                         Text("onboarding.skin_type".localized()).fontWeight(.semibold)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 8) {
-                            Picker("Skin Type", selection: $selectedSkinType) {
-                                ForEach(FitzpatrickSkinType.allCases) { type in
-                                    Text(type.displayName).tag(type)
-                                }
-                            }
+                            SkinTonePicker(selection: $selectedSkinType)
+                            Text(selectedSkinType.displayName)
+                                .font(.caption.bold())
                             Text(selectedSkinType.description)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)

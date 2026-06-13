@@ -4,7 +4,7 @@ import SwiftUI
 // MARK: - Locales & Settings Enums
 
 enum AppRegion: String, Codable, CaseIterable, Identifiable {
-    case germany, austria, switzerland, france, usa, canada, uk, australia, india, farsi, arabic, japan, china, serbia, croatia, russia, hungary, italy, spain, portugal, brazil
+    case germany, austria, switzerlandDE, switzerlandFR, switzerlandIT, france, usa, canada, uk, australia, india, farsi, arabic, japan, china, serbia, croatia, russia, hungary, italy, spain, portugal, brazil
 
     var id: String { rawValue }
 
@@ -12,7 +12,9 @@ enum AppRegion: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .germany: return "Germany"
         case .austria: return "Austria"
-        case .switzerland: return "Switzerland"
+        case .switzerlandDE: return "Switzerland (German)"
+        case .switzerlandFR: return "Switzerland (French)"
+        case .switzerlandIT: return "Switzerland (Italian)"
         case .france: return "France"
         case .usa: return "USA"
         case .canada: return "Canada"
@@ -50,8 +52,8 @@ enum AppRegion: String, Codable, CaseIterable, Identifiable {
 
     var languageCode: String {
         switch self {
-        case .germany, .austria, .switzerland: return "de"
-        case .france: return "fr"
+        case .germany, .austria, .switzerlandDE: return "de"
+        case .france, .switzerlandFR: return "fr"
         case .usa, .canada, .uk, .australia, .india: return "en"
         case .farsi: return "fa"
         case .arabic: return "ar"
@@ -61,7 +63,7 @@ enum AppRegion: String, Codable, CaseIterable, Identifiable {
         case .croatia: return "hr"
         case .russia: return "ru"
         case .hungary: return "hu"
-        case .italy: return "it"
+        case .italy, .switzerlandIT: return "it"
         case .spain: return "es"
         case .portugal, .brazil: return "pt"
         }
@@ -69,7 +71,7 @@ enum AppRegion: String, Codable, CaseIterable, Identifiable {
 }
 
 enum AppLanguage: String, Codable, CaseIterable, Identifiable {
-    case english, german, french, frenchCanadian, afrikaans, hindi, farsi, arabic, japanese, chinese, serbian, croatian, russian, hungarian, italian, spanish, portuguese, brazilianPortuguese, korean
+    case english, german, french, frenchSwiss, frenchCanadian, afrikaans, hindi, farsi, arabic, japanese, chinese, serbian, serbianLatin, croatian, russian, hungarian, italian, spanish, portuguese, brazilianPortuguese, korean, polish, norwegian, finnish, swedish, danish, czech, slovak, romanian, bulgarian, turkish, greek, swahili, oshiwambo, khoekhoe, herero, silozi
 
     var id: String { rawValue }
 
@@ -77,7 +79,8 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .english: return "English"
         case .german: return "Deutsch"
-        case .french: return "Français"
+        case .french: return "Français (France)"
+        case .frenchSwiss: return "Français (Suisse)"
         case .frenchCanadian: return "Français (Canada)"
         case .afrikaans: return "Afrikaans"
         case .hindi: return "हिन्दी"
@@ -86,14 +89,31 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
         case .japanese: return "日本語"
         case .chinese: return "中文"
         case .serbian: return "Српски"
+        case .serbianLatin: return "Srpski"
         case .croatian: return "Hrvatski"
         case .russian: return "Русский"
         case .hungarian: return "Magyar"
         case .italian: return "Italiano"
         case .spanish: return "Español"
-        case .portuguese: return "Português"
+        case .portuguese: return "Português (Portugal)"
         case .brazilianPortuguese: return "Português (Brasil)"
         case .korean: return "한국어"
+        case .polish: return "Polski"
+        case .norwegian: return "Norsk"
+        case .finnish: return "Suomi"
+        case .swedish: return "Svenska"
+        case .danish: return "Dansk"
+        case .czech: return "Čeština"
+        case .slovak: return "Slovenčina"
+        case .romanian: return "Română"
+        case .bulgarian: return "Български"
+        case .turkish: return "Türkçe"
+        case .greek: return "Ελληνικά"
+        case .swahili: return "Kiswahili"
+        case .oshiwambo: return "Oshiwambo"
+        case .khoekhoe: return "Khoekhoegowab (Damara/Nama)"
+        case .herero: return "Otjiherero"
+        case .silozi: return "Silozi (Caprivi)"
         }
     }
 
@@ -102,6 +122,7 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
         case .english: return "en"
         case .german: return "de"
         case .french: return "fr"
+        case .frenchSwiss: return "fr-CH"
         case .frenchCanadian: return "fr-CA"
         case .afrikaans: return "af"
         case .hindi: return "hi"
@@ -110,6 +131,7 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
         case .japanese: return "ja"
         case .chinese: return "zh"
         case .serbian: return "sr"
+        case .serbianLatin: return "sr-Latn"
         case .croatian: return "hr"
         case .russian: return "ru"
         case .hungarian: return "hu"
@@ -118,6 +140,22 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
         case .portuguese: return "pt"
         case .brazilianPortuguese: return "pt-BR"
         case .korean: return "ko"
+        case .polish: return "pl"
+        case .norwegian: return "nb"
+        case .finnish: return "fi"
+        case .swedish: return "sv"
+        case .danish: return "da"
+        case .czech: return "cs"
+        case .slovak: return "sk"
+        case .romanian: return "ro"
+        case .bulgarian: return "bg"
+        case .turkish: return "tr"
+        case .greek: return "el"
+        case .swahili: return "sw"
+        case .oshiwambo: return "ng"
+        case .khoekhoe: return "naq"
+        case .herero: return "hz"
+        case .silozi: return "loz"
         }
     }
 }
@@ -130,6 +168,18 @@ enum UnitSystem: String, Codable, CaseIterable, Identifiable {
 
 enum FitzpatrickSkinType: String, Codable, CaseIterable, Identifiable {
     case typeI, typeII, typeIII, typeIV, typeV, typeVI
+
+    /// Approximate Fitzpatrick skin tone, used for visual swatches.
+    var toneColor: Color {
+        switch self {
+        case .typeI:   return Color(red: 0.98, green: 0.87, blue: 0.79)
+        case .typeII:  return Color(red: 0.95, green: 0.80, blue: 0.66)
+        case .typeIII: return Color(red: 0.87, green: 0.67, blue: 0.46)
+        case .typeIV:  return Color(red: 0.74, green: 0.53, blue: 0.33)
+        case .typeV:   return Color(red: 0.52, green: 0.35, blue: 0.20)
+        case .typeVI:  return Color(red: 0.31, green: 0.21, blue: 0.14)
+        }
+    }
 
     var id: String { rawValue }
 
@@ -203,3 +253,34 @@ final class AppSettingsState: Codable {
     var onboardingCompleted: Bool = false
     var reminders: RemindersSettings = RemindersSettings()
 }
+
+/// Horizontal swatch selector so users pick their Fitzpatrick skin tone by
+/// sight rather than by reading roman numerals.
+struct SkinTonePicker: View {
+    @Binding var selection: FitzpatrickSkinType
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(FitzpatrickSkinType.allCases) { type in
+                Circle()
+                    .fill(type.toneColor)
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle().strokeBorder(
+                            selection == type ? Color.accentColor : Color.primary.opacity(0.15),
+                            lineWidth: selection == type ? 3 : 1)
+                    )
+                    .overlay(
+                        selection == type
+                            ? Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.white)
+                            : nil
+                    )
+                    .onTapGesture { selection = type }
+                    .accessibilityLabel(type.displayName)
+                    .accessibilityAddTraits(selection == type ? .isSelected : [])
+            }
+        }
+    }
+}
+

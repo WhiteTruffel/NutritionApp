@@ -2,6 +2,7 @@ import SwiftUI
 import MessageUI
 
 struct NewSettingsView: View {
+    @AppStorage(AppearanceMode.storageKey) private var appearanceRaw = AppearanceMode.system.rawValue
     @State private var showRemindersSheet = false
     @State private var showRecommendSheet = false
     @State private var reminders = RemindersSettings()
@@ -63,6 +64,14 @@ struct NewSettingsView: View {
                     }
                 }
 
+                Section("Appearance") {
+                    Picker("Theme", selection: $appearanceRaw) {
+                        ForEach(AppearanceMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode.rawValue)
+                        }
+                    }
+                }
+
                 Section("App") {
                     Button(action: { showRecommendSheet = true }) {
                         HStack {
@@ -115,10 +124,10 @@ struct PersonalInfoEditView: View {
                     }
                 }
 
-                Picker("Skin Type", selection: $skinType) {
-                    ForEach(FitzpatrickSkinType.allCases) { type in
-                        Text(type.displayName).tag(type)
-                    }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Skin Type")
+                    SkinTonePicker(selection: $skinType)
+                    Text(skinType.displayName).font(.caption.bold())
                 }
 
                 Text(skinType.description)

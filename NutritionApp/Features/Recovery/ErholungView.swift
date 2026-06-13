@@ -14,7 +14,7 @@ struct RecoveryDetailView: View {
     var body: some View {
         List {
             if loading {
-                HStack { ProgressView(); Text("Lade Erholungsdaten …").foregroundStyle(.secondary) }
+                HStack { ProgressView(); Text("recovery.loading".localized()).foregroundStyle(.secondary) }
             } else {
                 recommendationSection
                 recoverySection
@@ -22,7 +22,7 @@ struct RecoveryDetailView: View {
                 sleepSection
                 regenerationSection
                 Section {
-                    Text("Alle Werte stammen aus Apple Health und dienen nur der Orientierung – keine medizinische Bewertung.")
+                    Text("recovery.disclaimer".localized())
                         .font(.caption2).foregroundStyle(.secondary)
                 }
             }
@@ -35,12 +35,12 @@ struct RecoveryDetailView: View {
 
     private var recommendation: (text: String, color: Color, symbol: String) {
         guard let s = readiness?.score else {
-            return ("Noch zu wenig Daten für eine Empfehlung – trage Schlaf & Herzdaten in Apple Health bei.", .secondary, "questionmark.circle")
+            return ("recovery.advice.insufficient".localized(), .secondary, "questionmark.circle")
         }
         switch s {
-        case 66...:    return ("Gut erholt – eine höhere Belastung ist heute in Ordnung.", .green, "checkmark.seal.fill")
-        case 40..<66:  return ("Mäßig erholt – moderate Belastung empfehlenswert.", .orange, "exclamationmark.triangle.fill")
-        default:       return ("Wenig erholt – heute eher regenerieren.", .red, "bed.double.fill")
+        case 66...:    return ("recovery.advice.good".localized(), .green, "checkmark.seal.fill")
+        case 40..<66:  return ("recovery.advice.moderate".localized(), .orange, "exclamationmark.triangle.fill")
+        default:       return ("recovery.advice.low".localized(), .red, "bed.double.fill")
         }
     }
 
@@ -57,15 +57,15 @@ struct RecoveryDetailView: View {
     // MARK: Erholungs-Score
 
     private var recoverySection: some View {
-        Section("Erholung") {
-            scorePill(title: "Erholungs-Score",
+        Section("today.recovery".localized()) {
+            scorePill(title: "recovery.score".localized(),
                       value: readiness.map { "\($0.score)" } ?? "–",
                       unit: readiness != nil ? "/100" : "",
                       color: scoreColor(readiness?.score))
                 .padding(.vertical, 4)
             if let r = readiness {
-                if let hrv = r.hrv { detailRow("Herzraten­variabilität", String(format: "%.0f ms", hrv)) }
-                if let rhr = r.rhr { detailRow("Ruhepuls", String(format: "%.0f bpm", rhr)) }
+                if let hrv = r.hrv { detailRow("recovery.hrv".localized(), String(format: "%.0f ms", hrv)) }
+                if let rhr = r.rhr { detailRow("recovery.rhr".localized(), String(format: "%.0f bpm", rhr)) }
             }
         }
     }
@@ -81,7 +81,7 @@ struct RecoveryDetailView: View {
                 Label("Alle Trends ansehen", systemImage: "chart.xyaxis.line")
             }
         } header: {
-            Text("Trend")
+            Text("recovery.trend".localized())
         }
     }
 
@@ -90,28 +90,28 @@ struct RecoveryDetailView: View {
     @ViewBuilder
     private var sleepSection: some View {
         if let s = sleep {
-            Section("Schlaf – letzte Nacht") {
+            Section("recovery.sleep_last_night".localized()) {
                 HStack {
-                    Text("Gesamt").font(.headline)
+                    Text("recovery.total".localized()).font(.headline)
                     Spacer()
                     Text(hm(s.totalHours)).font(.headline).foregroundStyle(.indigo)
                 }
                 if let start = s.start, let end = s.end {
-                    detailRow("Im Bett", "\(start.formatted(date: .omitted, time: .shortened)) – \(end.formatted(date: .omitted, time: .shortened))")
+                    detailRow("recovery.in_bed".localized(), "\(start.formatted(date: .omitted, time: .shortened)) – \(end.formatted(date: .omitted, time: .shortened))")
                 }
                 stageBar(s)
-                stageRow("Tiefschlaf", s.deepHours, .indigo)
+                stageRow("recovery.deep".localized(), s.deepHours, .indigo)
                 stageRow("REM", s.remHours, .purple)
-                stageRow("Kernschlaf", s.coreHours, .blue)
-                stageRow("Wach", s.awakeHours, .gray)
+                stageRow("recovery.core".localized(), s.coreHours, .blue)
+                stageRow("recovery.awake".localized(), s.awakeHours, .gray)
                 if !sleep7.isEmpty {
                     let avg = sleep7.reduce(0, +) / Double(sleep7.count)
-                    detailRow("7-Tage-Schnitt", hm(avg))
+                    detailRow("recovery.avg7".localized(), hm(avg))
                 }
             }
         } else {
-            Section("Schlaf") {
-                Text("Keine Schlafdaten in Apple Health gefunden (letzte 36 h).")
+            Section("recovery.sleep".localized()) {
+                Text("recovery.no_sleep".localized())
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
@@ -120,9 +120,9 @@ struct RecoveryDetailView: View {
     // MARK: Regeneration (Achtsamkeit/Meditation/Sauna)
 
     private var regenerationSection: some View {
-        Section("Regeneration") {
-            detailRow("Achtsamkeit / Meditation", mindfulMin > 0 ? "\(Int(mindfulMin.rounded())) min" : "–")
-            Text("Atemübungen, Meditation oder Sauna, die als Achtsamkeit in Apple Health landen, zählen hier mit.")
+        Section("recovery.regeneration".localized()) {
+            detailRow("recovery.mindfulness".localized(), mindfulMin > 0 ? "\(Int(mindfulMin.rounded())) min" : "–")
+            Text("recovery.mindfulness_note".localized())
                 .font(.caption2).foregroundStyle(.secondary)
         }
     }

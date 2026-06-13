@@ -62,32 +62,32 @@ struct WeeklyReviewView: View {
 
     var body: some View {
         List {
-            Section("7-Tage-Schnitt") {
-                row("Ø Kalorien", "\(Int(avgKcal.rounded())) kcal",
+            Section("recovery.avg7".localized()) {
+                row("review.avg_cals".localized(), "\(Int(avgKcal.rounded())) kcal",
                     sub: "Ziel \(Int(goalKcal)) kcal · Δ \(Int((avgKcal - goalKcal).rounded())) kcal")
-                row("Ø Kohlenhydrate", "\(Int((weekTotals.carbsG / max(1, Double(daysLogged))).rounded())) g")
-                row("Ø Eiweiß", "\(Int((weekTotals.proteinG / max(1, Double(daysLogged))).rounded())) g")
-                row("Ø Fett", "\(Int((weekTotals.fatG / max(1, Double(daysLogged))).rounded())) g")
-                row("Tage geloggt", "\(daysLogged) / 7")
+                row("review.avg_carbs".localized(), "\(Int((weekTotals.carbsG / max(1, Double(daysLogged))).rounded())) g")
+                row("review.avg_protein".localized(), "\(Int((weekTotals.proteinG / max(1, Double(daysLogged))).rounded())) g")
+                row("review.avg_fat".localized(), "\(Int((weekTotals.fatG / max(1, Double(daysLogged))).rounded())) g")
+                row("review.days_logged".localized(), "\(daysLogged) / 7")
                 if let weightChange {
                     row("Gewicht", "\(weightChange >= 0 ? "+" : "")\(String(format: "%.1f", weightChange)) kg")
                 }
             }
 
             Section {
-                correlationRow(title: "Koffein ↔ Schlaf", pair: pairs(caffeineByDay),
-                               moreText: "mehr Koffein → kürzerer Schlaf",
-                               lessText: "mehr Koffein → längerer Schlaf")
-                correlationRow(title: "Kalorien ↔ Schlaf", pair: pairs(kcalByDay),
-                               moreText: "mehr Kalorien → kürzerer Schlaf",
-                               lessText: "mehr Kalorien → längerer Schlaf")
+                correlationRow(title: "review.corr_caffeine_sleep".localized(), pair: pairs(caffeineByDay),
+                               moreText: "review.more_caff_short".localized(),
+                               lessText: "review.more_caff_long".localized())
+                correlationRow(title: "review.corr_cals_sleep".localized(), pair: pairs(kcalByDay),
+                               moreText: "review.more_cals_short".localized(),
+                               lessText: "review.more_cals_long".localized())
             } header: {
-                Text("Zusammenhänge")
+                Text("review.correlations".localized())
             } footer: {
-                Text("Einfache Korrelationen aus deinen Daten – Zusammenhang ist kein Beweis für Ursache. Braucht einige Tage mit Schlaf- und Erfassungsdaten.")
+                Text("review.corr_note".localized())
             }
         }
-        .navigationTitle("Wochenrückblick")
+        .navigationTitle("review.title".localized())
         .navigationBarTitleDisplayMode(.inline)
         .task { nights = await health.sleepNightsDated(days: 14) }
     }
@@ -113,11 +113,11 @@ struct WeeklyReviewView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                 if let r {
-                    Text(abs(r) < 0.2 ? "kein klarer Zusammenhang"
+                    Text(abs(r) < 0.2 ? "review.no_clear".localized()
                          : "\(abs(r) < 0.5 ? "schwacher" : "deutlicher") Zusammenhang · \(r < 0 ? moreText : lessText)")
                         .font(.caption).foregroundStyle(.secondary)
                 } else {
-                    Text("noch zu wenig Daten").font(.caption).foregroundStyle(.tertiary)
+                    Text("review.insufficient".localized()).font(.caption).foregroundStyle(.tertiary)
                 }
             }
             Spacer()

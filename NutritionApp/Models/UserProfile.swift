@@ -4,7 +4,7 @@ import SwiftData
 enum Sex: String, Codable, CaseIterable, Identifiable {
     case male, female
     var id: String { rawValue }
-    var label: String { self == .male ? "Männlich" : "Weiblich" }
+    var label: String { self == .male ? "settings.gender.male".localized() : "settings.gender.female".localized() }
 }
 
 /// Grundaktivität OHNE Training (NEAT) – Sport wird separat aus Apple Health ergänzt,
@@ -23,11 +23,11 @@ enum ActivityLevel: String, Codable, CaseIterable, Identifiable {
     }
     var label: String {
         switch self {
-        case .sedentary: "Überwiegend sitzend (Büro)"
-        case .light:     "Leicht aktiv im Alltag"
-        case .moderate:  "Mäßig aktiv (viel auf den Beinen)"
-        case .high:      "Stehender/körperlicher Beruf"
-        case .veryHigh:  "Schwere körperliche Arbeit"
+        case .sedentary: "activity.sedentary".localized()
+        case .light:     "activity.light".localized()
+        case .moderate:  "activity.moderate".localized()
+        case .high:      "activity.high".localized()
+        case .veryHigh:  "activity.veryhigh".localized()
         }
     }
 }
@@ -38,12 +38,12 @@ enum MacroStrategy: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .balanced:     "Ausgewogen (50/20/30)"
-        case .lowCarb:      "Low Carb (25/35/40)"
-        case .highProtein:  "High Protein (40/35/25)"
-        case .keto:         "Keto (5/25/70)"
-        case .proteinPerKg: "Eiweiß nach Gewicht (1,8 g/kg)"
-        case .custom:       "Eigene Aufteilung"
+        case .balanced:     "macro.balanced".localized()
+        case .lowCarb:      "macro.lowcarb".localized()
+        case .highProtein:  "macro.highprotein".localized()
+        case .keto:         "macro.keto".localized()
+        case .proteinPerKg: "macro.proteinperkg".localized()
+        case .custom:       "macro.custom".localized()
         }
     }
 }
@@ -63,6 +63,7 @@ final class UserProfile {
     var customFatPct: Double
     var bodyFatPercent: Double?     // optional, aus Apple Health → genauerer Grundumsatz
     var useAdaptiveTDEE: Bool = false   // Goldstandard: Umsatz aus Gewichtstrend + Zufuhr lernen
+    var skinTypeRaw: String = FitzpatrickSkinType.typeII.rawValue   // Fitzpatrick skin type, app-owned (HealthKit's is read-only)
 
     init(sex: Sex = .male, age: Int = 30, heightCm: Double = 175, weightKg: Double = 75,
          activity: ActivityLevel = .moderate, weeklyRateKg: Double = 0,
@@ -94,6 +95,11 @@ final class UserProfile {
     var macroStrategy: MacroStrategy {
         get { MacroStrategy(rawValue: macroStrategyRaw) ?? .balanced }
         set { macroStrategyRaw = newValue.rawValue }
+    }
+
+    var skinType: FitzpatrickSkinType {
+        get { FitzpatrickSkinType(rawValue: skinTypeRaw) ?? .typeII }
+        set { skinTypeRaw = newValue.rawValue }
     }
 
     // MARK: Best-Practice-Rechnung

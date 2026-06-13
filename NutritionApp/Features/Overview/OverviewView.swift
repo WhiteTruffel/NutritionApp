@@ -55,17 +55,17 @@ struct OverviewView: View {
                     header
 
                     NavigationLink { DashboardView() } label: {
-                        RingCard(title: "Ernährung", value: "\(remainingKcal)", unit: "kcal übrig",
+                        RingCard(title: "today.nutrition".localized(), value: "\(remainingKcal)", unit: "today.kcal_left".localized(),
                                  progress: nutritionProgress, color: Theme.accent, symbol: "fork.knife")
                     }.buttonStyle(.plain)
 
-                    NavigationLink { LoadDetailView().navigationTitle("Belastung").navigationBarTitleDisplayMode(.inline) } label: {
-                        RingCard(title: "Belastung", value: "\(Int(moveKcal.rounded()))", unit: "kcal heute",
+                    NavigationLink { LoadDetailView().navigationTitle("today.load".localized()).navigationBarTitleDisplayMode(.inline) } label: {
+                        RingCard(title: "today.load".localized(), value: "\(Int(moveKcal.rounded()))", unit: "today.kcal_today".localized(),
                                  progress: loadProgress, color: .orange, symbol: "flame.fill")
                     }.buttonStyle(.plain)
 
-                    NavigationLink { RecoveryDetailView().navigationTitle("Erholung").navigationBarTitleDisplayMode(.inline) } label: {
-                        RingCard(title: "Erholung", value: recoveryScore.map { "\($0)" } ?? "–", unit: "von 100",
+                    NavigationLink { RecoveryDetailView().navigationTitle("today.recovery".localized()).navigationBarTitleDisplayMode(.inline) } label: {
+                        RingCard(title: "today.recovery".localized(), value: recoveryScore.map { "\($0)" } ?? "–", unit: "today.of_100".localized(),
                                  progress: recoveryProgress, color: .blue, symbol: "bed.double.fill")
                     }.buttonStyle(.plain)
 
@@ -77,7 +77,7 @@ struct OverviewView: View {
                 .padding(16)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Heute")
+            .navigationTitle("tab.today".localized())
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showGoals = true } label: { Image(systemName: "gearshape.fill") }
@@ -99,29 +99,29 @@ struct OverviewView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(Date().formatted(.dateTime.weekday(.wide).day().month(.wide)))
+            Text(Date().formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: LocalizationManager.shared.currentLanguage.languageCode))))
                 .font(.subheadline).foregroundStyle(.secondary)
             Text(statusLine).font(.title3.weight(.semibold))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     private var statusLine: String {
-        if let s = recoveryScore { return "\(recoveryWord(s)) · \(remainingKcal) kcal übrig" }
-        return "\(remainingKcal) kcal übrig heute"
+        if let s = recoveryScore { return "\(recoveryWord(s)) · \(remainingKcal) \("today.kcal_left".localized())" }
+        return "\(remainingKcal) \("today.kcal_left_today".localized())"
     }
     private func recoveryWord(_ s: Int) -> String {
-        switch s { case 66...: return "Gut erholt"; case 40..<66: return "Mäßig erholt"; default: return "Wenig erholt" }
+        switch s { case 66...: return "today.recovery.good".localized(); case 40..<66: return "today.recovery.moderate".localized(); default: return "today.recovery.low".localized() }
     }
 
     // MARK: Schnellerfassung
 
     private var quickActions: some View {
         HStack(spacing: 10) {
-            actionButton("plus.circle.fill", "Essen") { showAddFood = true }
+            actionButton("plus.circle.fill", "today.eat".localized()) { showAddFood = true }
                 .accessibilityIdentifier("overview.quick.essen")
-            actionButton("drop.fill", "Wasser") { addIntake(.water, 250) }
+            actionButton("drop.fill", "today.water".localized()) { addIntake(.water, 250) }
                 .accessibilityIdentifier("overview.quick.wasser")
-            actionButton("cup.and.saucer.fill", "Kaffee") { addIntake(.caffeine, 95); addIntake(.water, 200) }
+            actionButton("cup.and.saucer.fill", "today.coffee".localized()) { addIntake(.caffeine, 95); addIntake(.water, 200) }
                 .accessibilityIdentifier("overview.quick.kaffee")
         }
     }
@@ -170,11 +170,11 @@ struct OverviewView: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Image(systemName: "flame.fill").foregroundStyle(.orange)
-                    Text(streak > 0 ? "\(streak) Tage in Folge" : "Heute starten?")
+                    Text(streak > 0 ? "\(streak) \("today.streak".localized())" : "today.start_today".localized())
                         .font(.headline)
                 }
-                Text(streak > 0 ? "\(daysLogged7) von 7 Tagen erfasst – schön dabeizubleiben."
-                                : "Jeder Eintrag zählt – leg einfach los.")
+                Text(streak > 0 ? "\(daysLogged7) \("today.streak_sub_logged".localized())"
+                                : "today.streak_sub_start".localized())
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
@@ -199,8 +199,8 @@ struct OverviewView: View {
                 Image(systemName: "chart.xyaxis.line").font(.title3).foregroundStyle(Theme.accent)
                     .frame(width: 32)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Trends").font(.headline)
-                    Text("Ruhepuls, Schritte, Schlaf, Gewicht … über Zeit")
+                    Text("today.trends".localized()).font(.headline)
+                    Text("today.trends_sub".localized())
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -217,9 +217,9 @@ struct OverviewView: View {
 
     private var statsStrip: some View {
         HStack(spacing: 10) {
-            miniTile("figure.walk", steps > 0 ? steps.formatted(.number.precision(.fractionLength(0))) : "–", "Schritte", .green)
-            miniTile("drop.fill", "\(Int(todayWater)) ml", "Wasser", .blue)
-            miniTile("timer", fastingStatus, "Fasten", .purple)
+            miniTile("figure.walk", steps > 0 ? steps.formatted(.number.precision(.fractionLength(0))) : "–", "today.steps".localized(), .green)
+            miniTile("drop.fill", "\(Int(todayWater)) ml", "today.water".localized(), .blue)
+            miniTile("timer", fastingStatus, "today.fasting".localized(), .purple)
         }
     }
     private func miniTile(_ icon: String, _ value: String, _ label: String, _ color: Color) -> some View {

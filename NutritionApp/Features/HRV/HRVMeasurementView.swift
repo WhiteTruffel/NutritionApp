@@ -6,12 +6,34 @@ struct HRVMeasurementView: View {
     @State private var hrvValue: Double? = nil
     @State private var advice: String = ""
     @State private var adviceColor: Color = .gray
+    @State private var errorMessage: String? = nil
     let health = NutritionHealthStore()
 
     var body: some View {
         VStack(spacing: 24) {
             Text("hrv.title".localized())
                 .font(.title2.weight(.bold))
+
+            if let error = errorMessage {
+                VStack(spacing: 8) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .foregroundStyle(.red)
+                        Text(error)
+                            .font(.callout)
+                            .lineLimit(3)
+                    }
+                    .padding(12)
+                    .background(Color.red.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
+
+                    Button("hrv.dismiss".localized()) {
+                        errorMessage = nil
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color.gray.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
+                }
+            }
 
             if let hrv = hrvValue {
                 VStack(spacing: 12) {
@@ -21,7 +43,7 @@ struct HRVMeasurementView: View {
                     VStack(spacing: 4) {
                         Text(String(format: "%.1f ms", hrv))
                             .font(.headline.weight(.semibold))
-                        Text("Heart Rate Variability")
+                        Text("hrv.title".localized())
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -61,7 +83,7 @@ struct HRVMeasurementView: View {
                         Text("hrv.title".localized())
                             .font(.headline.weight(.semibold))
 
-                        Text("Place your finger on the camera for 30 seconds. Stay still and maintain good contact.")
+                        Text("hrv.instruction".localized())
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -95,20 +117,35 @@ struct HRVMeasurementView: View {
 
     private func startMeasurement() {
         isMonitoring = true
+        errorMessage = nil
 
         Task {
-            try? await Task.sleep(nanoseconds: 5_000_000_000) // Simulate 5-second capture
+            do {
+                try await Task.sleep(nanoseconds: 30_000_000_000) // Simulate 30-second capture
 
-            let simulatedHRV = Double.random(in: 30...120)
-            await MainActor.run {
-                hrvValue = simulatedHRV
-                advice = getAdvice(for: simulatedHRV)
-                adviceColor = colorForAdvice(simulatedHRV)
-                isMonitoring = false
+                let simulatedHRV = Double.random(in: 30...120)
 
-                // Save to HealthKit
-                Task {
-                    try? await health.saveHRVSample(hrv: simulatedHRV)
+                do {
+                    try await health.saveHRVSample(hrv: simulatedHRV)
+                } catch {
+                    print("❌ HRV Save Error: \(error.localizedDescription)")
+                    await MainActor.run {
+                        errorMessage = "\("hrv.error.save".localized()): \(error.localizedDescription)"
+                        isMonitoring = false
+                        return
+                    }
+                }
+
+                await MainActor.run {
+                    hrvValue = simulatedHRV
+                    advice = getAdvice(for: simulatedHRV)
+                    adviceColor = colorForAdvice(simulatedHRV)
+                    isMonitoring = false
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "\("hrv.error.measure".localized()): \(error.localizedDescription)"
+                    isMonitoring = false
                 }
             }
         }
@@ -118,6 +155,7 @@ struct HRVMeasurementView: View {
         hrvValue = nil
         advice = ""
         adviceColor = .gray
+        errorMessage = nil
     }
 
     private func getAdvice(for hrv: Double) -> String {

@@ -13,22 +13,22 @@ struct WhatsNewView: View {
     }
 
     private let features: [Feature] = [
-        .init(symbol: "camera.viewfinder", title: "Gericht fotografieren (KI)",
-              subtitle: "Foto machen – die KI erkennt das Gericht und schätzt Kalorien & Nährwerte."),
-        .init(symbol: "drop.fill", title: "Trinken-Reiter",
-              subtitle: "Flüssigkeitsziel nach Gewicht + Koffein mit Abbaukurve und „Schlaf-ok ab“-Zeit."),
-        .init(symbol: "leaf.fill", title: "Nährstoffe-Reiter",
-              subtitle: "Vitamine & Mineralstoffe pro Tag gegen die Tagesreferenz (RDA)."),
-        .init(symbol: "figure.run", title: "Fitness-Reiter",
-              subtitle: "Schlafphasen, Erholung vs. Belastung und deine Trainings an einem Ort."),
-        .init(symbol: "wand.and.stars", title: "Adaptiver Stoffwechsel",
-              subtitle: "Lernt deinen echten Umsatz aus Gewichtstrend & Zufuhr – statt Sport zu addieren."),
-        .init(symbol: "fork.knife", title: "Bessere Portionen",
-              subtitle: "„1 Riegel“, „1 Hamburger“ statt nur „100 g“ – inkl. Hersteller-Portionen."),
+        .init(symbol: "camera.viewfinder", title: "whatsnew.f1.title".localized(),
+              subtitle: "whatsnew.f1.sub".localized()),
+        .init(symbol: "drop.fill", title: "whatsnew.f2.title".localized(),
+              subtitle: "whatsnew.f2.sub".localized()),
+        .init(symbol: "leaf.fill", title: "whatsnew.f3.title".localized(),
+              subtitle: "whatsnew.f3.sub".localized()),
+        .init(symbol: "figure.run", title: "whatsnew.f4.title".localized(),
+              subtitle: "whatsnew.f4.sub".localized()),
+        .init(symbol: "wand.and.stars", title: "whatsnew.f5.title".localized(),
+              subtitle: "whatsnew.f5.sub".localized()),
+        .init(symbol: "fork.knife", title: "whatsnew.f6.title".localized(),
+              subtitle: "whatsnew.f6.sub".localized()),
         .init(symbol: "list.bullet.rectangle.portrait", title: "Tagebuch-Detailansicht",
               subtitle: "Zeitpunkt, Makro-Verteilung, % vom Tagesziel und Mikronährstoffe je Eintrag."),
-        .init(symbol: "key.fill", title: "Eigene API-Keys",
-              subtitle: "USDA & Gemini optional verbinden – mit Schritt-für-Schritt-Anleitung in den Einstellungen.")
+        .init(symbol: "key.fill", title: "whatsnew.f8.title".localized(),
+              subtitle: "whatsnew.f8.sub".localized())
     ]
 
     var body: some View {
@@ -39,7 +39,7 @@ struct WhatsNewView: View {
                         Image(systemName: "sparkles")
                             .font(.system(size: 44))
                             .foregroundStyle(Theme.accent)
-                        Text("Neu in NutritionApp \(Theme.appVersion)")
+                        Text("\("whatsnew.version".localized()) \(Theme.appVersion)")
                             .font(.title2.bold())
                             .multilineTextAlignment(.center)
                     }
@@ -67,7 +67,7 @@ struct WhatsNewView: View {
             .background(Color(.systemGroupedBackground))
             .safeAreaInset(edge: .bottom) {
                 Button { dismiss() } label: {
-                    Text("Los geht’s")
+                    Text("whatsnew.lets_go".localized())
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -77,11 +77,11 @@ struct WhatsNewView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 8)
             }
-            .navigationTitle("Was ist neu")
+            .navigationTitle("whatsnew.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Fertig") { dismiss() }
+                    Button("common.done".localized()) { dismiss() }
                 }
             }
         }

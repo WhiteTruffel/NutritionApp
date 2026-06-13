@@ -12,6 +12,7 @@ enum NutrientGroup: String, CaseIterable {
 struct NutrientDef: Identifiable {
     let key: String
     let label: String
+    var localizedLabel: String { "nutrient.\(key)".localized() }
     let unit: String        // "mg" | "µg" | "g"
     let rda: Double          // Tagesreferenzmenge Erwachsene
     let group: NutrientGroup

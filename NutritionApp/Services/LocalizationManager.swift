@@ -20,14 +20,14 @@ final class LocalizationManager {
            let language = AppLanguage(rawValue: saved) {
             self.currentLanguage = language
         } else {
-            self.currentLanguage = .german // Default
+            self.currentLanguage = .english // Default: English
         }
 
         if let saved = UserDefaults.standard.string(forKey: regionKey),
            let region = AppRegion(rawValue: saved) {
             self.currentRegion = region
         } else {
-            self.currentRegion = .germany // Default
+            self.currentRegion = .usa // Default: USA
         }
     }
 

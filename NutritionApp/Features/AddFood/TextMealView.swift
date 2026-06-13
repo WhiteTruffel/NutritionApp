@@ -17,28 +17,28 @@ struct TextMealView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("z. B. 2 Eier, 1 Scheibe Toast mit Butter und ein Kaffee",
+                    TextField("textmeal.placeholder".localized(),
                               text: $text, axis: .vertical)
                         .lineLimit(2...5)
                     Button { analyze() } label: {
                         HStack(spacing: 8) {
                             if loading { ProgressView() }
-                            Text("Analysieren")
+                            Text("textmeal.analyze".localized())
                         }
                     }
                     .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty || loading)
                 } header: {
-                    Text("Beschreibung")
+                    Text("textmeal.description".localized())
                 } footer: {
                     if !GeminiFoodVision.isConfigured {
-                        Text("Benötigt einen Gemini-API-Key (in den Einstellungen).")
+                        Text("textmeal.needs_key".localized())
                     } else if let error {
                         Text(error).foregroundStyle(.red)
                     }
                 }
 
                 if !results.isEmpty {
-                    Section("Erkannt – zum Übernehmen antippen") {
+                    Section("addfood.recognized_tap".localized()) {
                         ForEach(results.indices, id: \.self) { i in
                             let r = results[i]
                             Button { toggle(i) } label: {
@@ -58,12 +58,12 @@ struct TextMealView: View {
                     }
                 }
             }
-            .navigationTitle("Per Text erfassen")
+            .navigationTitle("textmeal.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Hinzufügen") {
+                    Button("common.add".localized()) {
                         onAdd(selected.sorted().map { results[$0] }); dismiss()
                     }
                     .disabled(selected.isEmpty)
@@ -84,7 +84,7 @@ struct TextMealView: View {
                 let res = try await GeminiFoodVision.recognizeText(q)
                 results = res
                 selected = Set(res.indices)
-                if res.isEmpty { error = "Nichts erkannt – Beschreibung anpassen." }
+                if res.isEmpty { error = "textmeal.nothing".localized() }
             } catch {
                 self.error = "KI-Fehler: \((error as? GeminiFoodVision.VisionError)?.errorDescription ?? error.localizedDescription)"
             }

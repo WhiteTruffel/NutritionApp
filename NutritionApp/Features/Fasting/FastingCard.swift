@@ -40,18 +40,18 @@ struct FastingCard: View {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(hm(elapsed)).font(.title2.weight(.bold)).monospacedDigit()
                         Text(reached
-                             ? "Fastenziel erreicht – stark! 🎉"
+                             ? "fasting.goal_reached".localized()
                              : "Ziel um \(endDate.formatted(date: .omitted, time: .shortened)) (\(goalHours) h)")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     Spacer(minLength: 0)
                 }
                 Button(role: .destructive) { startEpoch = 0 } label: {
-                    Text("Fasten beenden").frame(maxWidth: .infinity)
+                    Text("fasting.end".localized()).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
             } else {
-                Picker("Protokoll", selection: $goalHours) {
+                Picker("fasting.protocol".localized(), selection: $goalHours) {
                     ForEach(presets, id: \.self) { Text("\($0):\(24 - $0)").tag($0) }
                 }
                 .pickerStyle(.segmented)

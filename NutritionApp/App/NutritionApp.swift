@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct NutritionApp: App {
     let container: ModelContainer
+    @AppStorage(AppearanceMode.storageKey) private var appearanceRaw = AppearanceMode.system.rawValue
 
     init() {
         let schema = Schema([FoodItem.self, FoodEntry.self, DailyGoal.self, UserProfile.self,
@@ -54,6 +55,7 @@ struct NutritionApp: App {
         WindowGroup {
             RootTabView()
                 .tint(Theme.accent)
+                .preferredColorScheme((AppearanceMode(rawValue: appearanceRaw) ?? .system).colorScheme)
         }
         .modelContainer(container)
     }

@@ -20,7 +20,7 @@ struct FoodPickerView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Erkannt – zum Übernehmen antippen") {
+                Section("addfood.recognized_tap".localized()) {
                     ForEach(results.indices, id: \.self) { i in
                         let r = results[i]
                         Button { toggle(i) } label: {
@@ -42,9 +42,9 @@ struct FoodPickerView: View {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Hinzufügen") { onAdd(selected.sorted().map { results[$0] }); dismiss() }
+                    Button("common.add".localized()) { onAdd(selected.sorted().map { results[$0] }); dismiss() }
                         .disabled(selected.isEmpty)
                 }
             }

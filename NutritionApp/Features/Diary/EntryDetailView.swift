@@ -23,11 +23,11 @@ struct EntryDetailView: View {
             microSection
             actionSection
         }
-        .navigationTitle("Eintrag")
+        .navigationTitle("entry.title".localized())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Bearbeiten") { showEdit = true }
+                Button("entry.edit".localized()) { showEdit = true }
             }
         }
         .sheet(isPresented: $showEdit) {
@@ -40,7 +40,7 @@ struct EntryDetailView: View {
     private var headerSection: some View {
         Section {
             VStack(alignment: .leading, spacing: 6) {
-                Text(entry.food?.name ?? "Mahlzeit").font(.title3.bold())
+                Text(entry.food?.name ?? "diary.meal_fallback".localized()).font(.title3.bold())
                 if let brand = entry.food?.brand, !brand.isEmpty {
                     Text(brand).font(.subheadline).foregroundStyle(.secondary)
                 }
@@ -55,11 +55,11 @@ struct EntryDetailView: View {
                 .font(.caption).foregroundStyle(.secondary)
             }
             HStack {
-                Text("Menge"); Spacer()
+                Text("entry.amount".localized()); Spacer()
                 Text("\(Int(entry.grams.rounded())) g").foregroundStyle(.secondary)
             }
             HStack {
-                Text("Kalorien").font(.headline)
+                Text("nutrient.calories".localized()).font(.headline)
                 Spacer()
                 Text("\(Int((entry.kcal ?? 0).rounded())) kcal").font(.headline).foregroundStyle(Theme.accent)
             }
@@ -76,7 +76,7 @@ struct EntryDetailView: View {
         let p = entry.proteinG ?? 0, c = entry.carbsG ?? 0, f = entry.fatG ?? 0
         let pe = p * 4, ce = c * 4, fe = f * 9
         let tot = pe + ce + fe
-        return Section("Makronährstoffe") {
+        return Section("settings.section.macros".localized()) {
             if tot > 0 {
                 GeometryReader { geo in
                     HStack(spacing: 0) {
@@ -88,9 +88,9 @@ struct EntryDetailView: View {
                 .frame(height: 10).clipShape(Capsule())
                 .listRowSeparator(.hidden)
             }
-            macroRow("Eiweiß", grams: entry.proteinG, energy: pe, total: tot, target: profile?.targets.proteinG, color: .blue)
-            macroRow("Kohlenhydrate", grams: entry.carbsG, energy: ce, total: tot, target: profile?.targets.carbsG, color: .green)
-            macroRow("Fett", grams: entry.fatG, energy: fe, total: tot, target: profile?.targets.fatG, color: .orange)
+            macroRow("nutrient.protein".localized(), grams: entry.proteinG, energy: pe, total: tot, target: profile?.targets.proteinG, color: .blue)
+            macroRow("nutrient.carbs".localized(), grams: entry.carbsG, energy: ce, total: tot, target: profile?.targets.carbsG, color: .green)
+            macroRow("nutrient.fat".localized(), grams: entry.fatG, energy: fe, total: tot, target: profile?.targets.fatG, color: .orange)
         }
     }
 
@@ -117,12 +117,12 @@ struct EntryDetailView: View {
     @ViewBuilder
     private var otherNutrientsSection: some View {
         let rows: [(String, Double?, String)] = [
-            ("Ballaststoffe", entry.fiberG, "g"),
-            ("Zucker", entry.sugarG, "g"),
-            ("Natrium", entry.sodiumMg, "mg")
+            ("nutrient.fiber".localized(), entry.fiberG, "g"),
+            ("nutrient.sugar".localized(), entry.sugarG, "g"),
+            ("nutrient.sodium".localized(), entry.sodiumMg, "mg")
         ].filter { $0.1 != nil }
         if !rows.isEmpty {
-            Section("Weitere Nährwerte") {
+            Section("entry.more_nutrients".localized()) {
                 ForEach(rows, id: \.0) { r in
                     HStack { Text(r.0); Spacer()
                         Text("\(Int((r.1 ?? 0).rounded())) \(r.2)").foregroundStyle(.secondary).monospacedDigit() }
@@ -138,7 +138,7 @@ struct EntryDetailView: View {
         let micros = entry.food?.micros ?? [:]
         let defs = NutrientCatalog.all.filter { (micros[$0.key] ?? 0) > 0 }
         if !defs.isEmpty {
-            Section("Mikronährstoffe (diese Menge)") {
+            Section("entry.micros_amount".localized()) {
                 ForEach(defs) { def in
                     let v = (micros[def.key] ?? 0) * entry.grams / 100
                     HStack { Text(def.label); Spacer()
@@ -146,8 +146,8 @@ struct EntryDetailView: View {
                 }
             }
         } else {
-            Section("Mikronährstoffe") {
-                Text("Für dieses Lebensmittel liegen keine Vitamin-/Mineralstoff-Daten vor. Vollständige Mikronährstoffe gibt es vor allem bei USDA-Treffern (Quelle „USDA“ in der Suche).")
+            Section("entry.micros".localized()) {
+                Text("entry.no_micros".localized())
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
@@ -162,8 +162,8 @@ struct EntryDetailView: View {
 
     private var actionSection: some View {
         Section {
-            Button { duplicate() } label: { Label("Nochmal hinzufügen (heute)", systemImage: "plus.square.on.square") }
-            Button(role: .destructive) { deleteEntry() } label: { Label("Löschen", systemImage: "trash") }
+            Button { duplicate() } label: { Label("detail.add_again".localized(), systemImage: "plus.square.on.square") }
+            Button(role: .destructive) { deleteEntry() } label: { Label("common.delete".localized(), systemImage: "trash") }
         }
     }
 

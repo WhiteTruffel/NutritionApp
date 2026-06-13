@@ -39,7 +39,7 @@ struct DiaryView: View {
 
                 Section {
                     HStack {
-                        Text("Tagessumme").font(.subheadline.bold())
+                        Text("diary.day_total".localized()).font(.subheadline.bold())
                         Spacer()
                         Text("\(Int(dayTotals.kcal.rounded())) kcal")
                             .font(.subheadline.bold())
@@ -47,7 +47,7 @@ struct DiaryView: View {
                     }
                 }
             }
-            .navigationTitle("Tagebuch")
+            .navigationTitle("tab.diary".localized())
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .top) { dateBar }
             .toolbar {
@@ -63,15 +63,15 @@ struct DiaryView: View {
             .sheet(isPresented: $showScanner) {
                 ScanFlowView { addEntry($0) }
             }
-            .alert("Mahlzeit speichern", isPresented: Binding(
+            .alert("diary.save_meal_title".localized(), isPresented: Binding(
                 get: { savingMeal != nil },
                 set: { if !$0 { savingMeal = nil } }
             )) {
-                TextField("Name (z. B. Mein Frühstück)", text: $mealName)
-                Button("Speichern") { if let m = savingMeal { saveMeal(m) }; savingMeal = nil }
-                Button("Abbrechen", role: .cancel) { savingMeal = nil }
+                TextField("diary.meal_name_placeholder".localized(), text: $mealName)
+                Button("common.save".localized()) { if let m = savingMeal { saveMeal(m) }; savingMeal = nil }
+                Button("common.cancel".localized(), role: .cancel) { savingMeal = nil }
             } message: {
-                Text("Diese Mahlzeit als Vorlage sichern und künftig mit einem Tipp loggen.")
+                Text("diary.save_meal_msg".localized())
             }
         }
     }
@@ -79,7 +79,7 @@ struct DiaryView: View {
     /// BL8: aktuelle Mahlzeit als wiederverwendbare Vorlage speichern.
     private func saveMeal(_ meal: MealType) {
         let comps = entries(for: meal).map { e in
-            MealComponent(name: e.food?.name ?? "Mahlzeit", grams: e.grams,
+            MealComponent(name: e.food?.name ?? "diary.meal_fallback".localized(), grams: e.grams,
                           kcalPer100g: e.food?.kcalPer100g, proteinPer100g: e.food?.proteinPer100g,
                           carbsPer100g: e.food?.carbsPer100g, fatPer100g: e.food?.fatPer100g,
                           fiberPer100g: e.food?.fiberPer100g, sugarPer100g: e.food?.sugarPer100g,
@@ -106,7 +106,7 @@ struct DiaryView: View {
             Button {
                 addMeal = meal
             } label: {
-                Label("Eintrag hinzufügen", systemImage: "plus.circle.fill")
+                Label("diary.add_entry".localized(), systemImage: "plus.circle.fill")
                     .font(.subheadline)
             }
 
@@ -119,7 +119,7 @@ struct DiaryView: View {
 
             if !items.isEmpty {
                 Button { savingMeal = meal; mealName = "" } label: {
-                    Label("Als Mahlzeit speichern", systemImage: "square.and.arrow.down")
+                    Label("diary.save_as_meal".localized(), systemImage: "square.and.arrow.down")
                         .font(.subheadline)
                 }
             }
@@ -155,9 +155,9 @@ struct DiaryView: View {
 
     private var dayLabel: String {
         let cal = Calendar.current
-        if cal.isDateInToday(selectedDay) { return "Heute" }
-        if cal.isDateInYesterday(selectedDay) { return "Gestern" }
-        if cal.isDateInTomorrow(selectedDay) { return "Morgen" }
+        if cal.isDateInToday(selectedDay) { return "tab.today".localized() }
+        if cal.isDateInYesterday(selectedDay) { return "diary.yesterday".localized() }
+        if cal.isDateInTomorrow(selectedDay) { return "diary.tomorrow".localized() }
         return selectedDay.formatted(.dateTime.weekday(.wide).day().month(.abbreviated))
     }
 
@@ -214,7 +214,7 @@ private struct EntryRow: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text(entry.food?.name ?? "Mahlzeit")
+                Text(entry.food?.name ?? "diary.meal_fallback".localized())
                 Text("\(Int(entry.grams)) g")
                     .font(.caption)
                     .foregroundStyle(.secondary)

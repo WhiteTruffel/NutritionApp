@@ -63,13 +63,13 @@ struct AddFoodView: View {
                         }
                     }
                     if !mealTemplates.isEmpty {
-                        Section("Meine Mahlzeiten") {
+                        Section("addfood.my_meals".localized()) {
                             ForEach(mealTemplates) { t in
                                 Button { logMeal(t) } label: {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(t.name)
-                                            Text("\(t.components.count) Zutaten")
+                                            Text("\(t.components.count) \("addfood.ingredients".localized())")
                                                 .font(.caption).foregroundStyle(.secondary)
                                         }
                                         Spacer()
@@ -87,18 +87,18 @@ struct AddFoodView: View {
                         }
                     }
                     if !favoriteFoods.isEmpty {
-                        Section("Favoriten") {
+                        Section("addfood.favorites".localized()) {
                             ForEach(favoriteFoods) { foodRowItem($0) }
                         }
                     }
                     if !recentFoods.isEmpty {
-                        Section("Zuletzt verwendet") {
+                        Section("addfood.recent".localized()) {
                             ForEach(recentFoods) { foodRowItem($0) }
                         }
                     }
                 } else {
                     if !localMatches.isEmpty {
-                        Section("Eigene Lebensmittel") {
+                        Section("addfood.own_foods".localized()) {
                             ForEach(localMatches) { food in
                                 Button { selectedFood = food } label: {
                                     FoodRow(name: food.name, brand: food.brand,
@@ -108,9 +108,9 @@ struct AddFoodView: View {
                             }
                         }
                     }
-                    Section("Datenbanken") {
+                    Section("addfood.databases".localized()) {
                         if isSearching {
-                            HStack { ProgressView(); Text("Suche …").foregroundStyle(.secondary) }
+                            HStack { ProgressView(); Text("common.searching".localized()).foregroundStyle(.secondary) }
                         }
                         ForEach(results) { result in
                             Button { pick(result) } label: {
@@ -120,17 +120,17 @@ struct AddFoodView: View {
                             .buttonStyle(.plain)
                         }
                         if !isSearching && results.isEmpty {
-                            Text("Keine Treffer. Tipp: manuell erfassen.")
+                            Text("addfood.no_results".localized())
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
             }
-            .navigationTitle("Hinzufügen")
+            .navigationTitle("common.add".localized())
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $query, prompt: "Lebensmittel suchen")
+            .searchable(text: $query, prompt: "addfood.search_prompt".localized())
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
             }
             .task(id: query) { await runSearch() }
             .sheet(item: $selectedFood) { food in
@@ -152,7 +152,7 @@ struct AddFoodView: View {
                 TextMealView(presetMeal: presetMeal) { items in logResults(items) }
             }
             .sheet(item: $photoResults) { pr in
-                FoodPickerView(title: "Gericht erkannt", results: pr.items) { items in logResults(items) }
+                FoodPickerView(title: "addfood.dish_recognized".localized(), results: pr.items) { items in logResults(items) }
             }
             .sheet(isPresented: $showScanner) {
                 ScanFlowView { entry in onSave(entry); dismiss() }
@@ -160,33 +160,33 @@ struct AddFoodView: View {
             .sheet(isPresented: $showQuickAdd) {
                 QuickAddView(presetMeal: presetMeal) { entry in onSave(entry); dismiss() }
             }
-            .confirmationDialog("Nährwert-Etikett", isPresented: $showLabelOptions, titleVisibility: .visible) {
+            .confirmationDialog("addfood.label_dialog".localized(), isPresented: $showLabelOptions, titleVisibility: .visible) {
                 if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    Button("Kamera") { captureIsFood = false; pickerSource = .camera }
+                    Button("common.camera".localized()) { captureIsFood = false; pickerSource = .camera }
                 }
-                Button("Fotomediathek") { captureIsFood = false; pickerSource = .library }
-                Button("Abbrechen", role: .cancel) { }
+                Button("common.photo_library".localized()) { captureIsFood = false; pickerSource = .library }
+                Button("common.cancel".localized(), role: .cancel) { }
             } message: {
-                Text("Fotografiere die Nährwerttabelle – die Werte werden automatisch erkannt.")
+                Text("addfood.label_hint".localized())
             }
-            .confirmationDialog("Gericht erkennen", isPresented: $showFoodOptions, titleVisibility: .visible) {
+            .confirmationDialog("addfood.recognize_dish".localized(), isPresented: $showFoodOptions, titleVisibility: .visible) {
                 if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    Button("Kamera") { captureIsFood = true; pickerSource = .camera }
+                    Button("common.camera".localized()) { captureIsFood = true; pickerSource = .camera }
                 }
-                Button("Fotomediathek") { captureIsFood = true; pickerSource = .library }
-                Button("Abbrechen", role: .cancel) { }
+                Button("common.photo_library".localized()) { captureIsFood = true; pickerSource = .library }
+                Button("common.cancel".localized(), role: .cancel) { }
             } message: {
-                Text("Schätzung per Bilderkennung – das Ergebnis wird in die Suche übernommen, dort verfeinern.")
+                Text("addfood.recognize_hint".localized())
             }
             // Foto-Picker im EIGENEN Präsentations-Kanal (fullScreenCover), getrennt
             // von den .sheet(...)-Masken. Sonst blockieren sich schließender Picker und
             // öffnende Ergebnis-Maske im selben Sheet-Kanal → „nichts passiert".
             // Die Bildverarbeitung läuft erst im onDismiss, wenn der Picker komplett zu ist.
-            .alert("Gericht-Foto", isPresented: Binding(
+            .alert("addfood.dish_photo".localized(), isPresented: Binding(
                 get: { photoAlert != nil },
                 set: { if !$0 { photoAlert = nil } }
             )) {
-                Button("OK", role: .cancel) { photoAlert = nil }
+                Button("common.ok".localized(), role: .cancel) { photoAlert = nil }
             } message: {
                 Text(photoAlert ?? "")
             }
@@ -530,7 +530,7 @@ private struct QuickAddView: View {
             .navigationTitle("Schnelleintrag")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Abbrechen") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("common.cancel".localized()) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Sichern") { save() }.disabled(kcalValue == nil)
                 }
